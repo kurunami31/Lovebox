@@ -677,13 +677,13 @@ body::before {
   color: var(--rose-deep);
 }
 
-/* ---------------- memories gallery ---------------- */
+/* ---------------- memories carousel ---------------- */
 
 .memories { margin-top: 26px; }
 .memories__title {
   font-size: 18px;
   font-weight: 400;
-  margin: 0 0 12px;
+  margin: 0 0 14px;
   color: var(--ink);
   display: flex;
   align-items: center;
@@ -692,31 +692,72 @@ body::before {
 .memories__lily { width: 30px; height: auto; }
 .memories__title span { font-size: 13px; color: var(--ink-soft); }
 
-.memories__grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(108px, 1fr));
-  gap: 10px;
+.mem-carousel { position: relative; }
+.mem-track-wrapper { overflow: hidden; }
+.mem-track {
+  display: flex;
+  transition: transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  will-change: transform;
+}
+.mem-slide { width: 100%; }
+.mem-slide img {
+  width: 100%;
+  aspect-ratio: 4 / 5;
+  object-fit: cover;
+  border-radius: 16px;
+  box-shadow: 0 8px 24px rgba(160, 90, 105, 0.18);
+  cursor: zoom-in;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+.mem-slide img:hover { transform: scale(1.02); box-shadow: 0 12px 32px rgba(160, 90, 105, 0.25); }
+
+.mem-nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(255, 253, 251, 0.95);
+  box-shadow: 0 4px 14px rgba(160, 90, 105, 0.2);
+  color: var(--rose-deep);
+  font-size: 24px;
+  line-height: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+  transition: background 0.2s, transform 0.15s;
+}
+.mem-nav:hover { background: #fff; transform: scale(1.1); }
+.mem-nav:active { transform: scale(0.95); }
+.mem-nav--prev { left: -12px; }
+.mem-nav--next { right: -12px; }
+@media (max-width: 480px) {
+  .mem-nav { width: 36px; height: 36px; font-size: 20px; }
+  .mem-nav--prev { left: -6px; }
+  .mem-nav--next { right: -6px; }
 }
 
-.memory {
-  position: relative;
-  padding: 6px 6px 10px;
-  background: #fff;
-  border: 1px solid var(--line);
-  border-radius: 12px;
-  box-shadow: 0 4px 14px rgba(160, 90, 105, 0.12);
-  cursor: zoom-in;
-  transition: transform 0.15s, box-shadow 0.2s;
-  overflow: hidden;
+.mem-dots {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 14px;
 }
-.memory:hover { transform: translateY(-3px) rotate(-0.6deg); box-shadow: 0 8px 22px rgba(160, 90, 105, 0.2); }
-.memory img {
-  width: 100%;
-  height: 96px;
-  object-fit: cover;
-  border-radius: 8px;
-  display: block;
+.mem-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  border: 2px solid var(--line);
+  background: transparent;
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s, transform 0.2s;
 }
+.mem-dot:hover { border-color: var(--rose); transform: scale(1.2); }
+.mem-dot.active { background: var(--rose); border-color: var(--rose); }
 
 /* ---------------- lightbox ---------------- */
 

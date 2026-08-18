@@ -298,9 +298,13 @@
     setTimeout(() => moodStatus(), 2600);
   }
 
-  /* ---------------- memories gallery ---------------- */
+  /* ---------------- memories gallery (swipe carousel) ---------------- */
 
   let memPhotos = [];
+  let memIndex = 0;
+  let memAutoTimer = null;
+  let memStartX = 0;
+  let memDragging = false;
 
   async function renderMemories() {
     let photos;
@@ -310,30 +314,118 @@
     } catch { return; }
     memPhotos = photos;
     $('mem-count').textContent = photos.length ? `\u00b7 ${photos.length}` : '';
-    const grid = $('mem-grid');
-    grid.innerHTML = '';
-    photos.forEach((file) => {
-      const card = document.createElement('div');
-      card.className = 'memory';
+    const track = $('mem-track');
+    const dots = $('mem-dots');
+    track.innerHTML = '';
+    dots.innerHTML = '';
+    photos.forEach((file, i) => {
+      const slide = document.createElement('div');
+      slide.className = 'mem-slide';
+      slide.style.flex = '0 0 100%';
       const img = document.createElement('img');
       img.src = `/photos/${file}`;
-      img.alt = '';
-      img.loading = 'lazy';
-      card.appendChild(img);
-      card.addEventListener('click', () => openLightbox(photos.indexOf(file)));
-      grid.appendChild(card);
+      img.alt = `memory ${i + 1}`;
+      img.loading = i === 0 ? 'eager' : 'lazy';
+      slide.appendChild(img);
+      track.appendChild(slide);
+
+      const dot = document.createElement('button');
+      dot.className = 'mem-dot' + (i === 0 ? ' active' : '');
+      dot.setAttribute('aria-label', `Go to photo ${i + 1}`);
+      dot.addEventListener('click', () => goToSlide(i));
+      dots.appendChild(dot);
+    });
+    updateCarousel();
+    setupTouch();
+    startAutoPlay();
+  }
+
+  function updateCarousel() {
+    const track = $('mem-track');
+    if (!track) return;
+    track.style.transform = `translateX(${-memIndex * 100}%)`;
+    document.querySelectorAll('.mem-dot').forEach((d, i) => {
+      d.classList.toggle('active', i === memIndex);
     });
   }
 
+  function goToSlide(i) {
+    if (i < 0) i = memPhotos.length - 1;
+    if (i >= memPhotos.length) i = 0;
+    memIndex = i;
+    updateCarousel();
+  }
+
+  function nextSlide() { goToSlide(memIndex + 1); }
+  function prevSlide() { goToSlide(memIndex - 1); }
+
+  function setupTouch() {
+    const track = $('mem-track');
+    track.addEventListener('touchstart', (e) => {
+      memStartX = e.touches[0].clientX;
+      memDragging = true;
+      stopAutoPlay();
+    }, { passive: true });
+    track.addEventListener('touchmove', (e) => {
+      if (!memDragging) return;
+      const dx = e.touches[0].clientX - memStartX;
+      if (Math.abs(dx) > 30) {
+        dx > 0 ? prevSlide() : nextSlide();
+        memDragging = false;
+      }
+    }, { passive: true });
+    track.addEventListener('touchend', () => {
+      memDragging = false;
+      startAutoPlay();
+    });
+    track.addEventListener('mousedown', (e) => {
+      memStartX = e.clientX;
+      memDragging = true;
+      stopAutoPlay();
+    });
+    track.addEventListener('mousemove', (e) => {
+      if (!memDragging) return;
+      const dx = e.clientX - memStartX;
+      if (Math.abs(dx) > 40) {
+        dx > 0 ? prevSlide() : nextSlide();
+        memDragging = false;
+      }
+    });
+    track.addEventListener('mouseup', () => {
+      memDragging = false;
+      startAutoPlay();
+    });
+    track.addEventListener('mouseleave', () => {
+      memDragging = false;
+      startAutoPlay();
+    });
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowLeft') prevSlide();
+      if (e.key === 'ArrowRight') nextSlide();
+    });
+  }
+
+  function startAutoPlay() {
+    stopAutoPlay();
+    memAutoTimer = setInterval(nextSlide, 4500);
+  }
+  function stopAutoPlay() {
+    if (memAutoTimer) clearInterval(memAutoTimer);
+    memAutoTimer = null;
+  }
+
+  /* ---------------- lightbox (for full-screen) ---------------- */
+
+  let lbIndex = 0;
   function openLightbox(i) {
     lbIndex = i;
     $('lb-img').src = `/photos/${memPhotos[i]}`;
     $('lightbox').classList.add('is-on');
+    stopAutoPlay();
   }
-
-  let lbIndex = 0;
   function closeLightbox() {
     $('lightbox').classList.remove('is-on');
+    startAutoPlay();
   }
   function stepLightbox(d) {
     if (!memPhotos.length) return;
@@ -429,8 +521,8 @@
       }
     });
 
-    $('btn-share').addEventListener('click', openShare);
-    $('btn-empty-share').addEventListener('click', openShare);
+    $('btn-share').addEventListener('click', showWelcome);
+    $('btn-empty-share').addEventListener('click', showWelcome);
     $('share-close').addEventListener('click', () => Share.close());
     $('scrim').addEventListener('click', () => Share.close());
 
@@ -446,6 +538,9 @@
       if (e.key === 'ArrowLeft') stepLightbox(-1);
       if (e.key === 'ArrowRight') stepLightbox(1);
     });
+
+    $('mem-prev').addEventListener('click', prevSlide);
+    $('mem-next').addEventListener('click', nextSlide);
 
     $('invite-yes').addEventListener('click', confirmInvite);
     $('share-copy').addEventListener('click', async () => {

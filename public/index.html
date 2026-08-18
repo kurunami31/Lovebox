@@ -80,7 +80,14 @@
 
     <section class="memories">
       <h2 class="memories__title"><img class="memories__lily" src="/lily.svg" alt="lily"> memories <span id="mem-count"></span></h2>
-      <div class="memories__grid" id="mem-grid"></div>
+      <div class="mem-carousel" id="mem-carousel">
+        <button class="mem-nav mem-nav--prev" id="mem-prev" aria-label="Previous">&#8249;</button>
+        <div class="mem-track-wrapper">
+          <div class="mem-track" id="mem-track"></div>
+        </div>
+        <button class="mem-nav mem-nav--next" id="mem-next" aria-label="Next">&#8250;</button>
+      </div>
+      <div class="mem-dots" id="mem-dots" aria-label="Photo navigation"></div>
     </section>
   </main>
 </div>
