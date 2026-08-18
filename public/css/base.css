@@ -35,6 +35,17 @@ body {
     var(--bg);
   color: var(--ink);
   min-height: 100vh;
+  position: relative;
+}
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: url('/lily.svg') repeat;
+  background-size: 200px;
+  opacity: 0.06;
+  pointer-events: none;
+  z-index: -1;
 }
 
 .hidden { display: none !important; }
