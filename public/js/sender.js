@@ -221,7 +221,11 @@
         show('wrongbox');
       }
     });
-    document.addEventListener('pointerdown', () => Sound.init(), { once: true });
+    document.addEventListener('pointerdown', () => {
+      Sound.init();
+      Particles.init();
+      Music.init();
+    }, { once: true });
   }
 
   /* ---------------- feedback ---------------- */

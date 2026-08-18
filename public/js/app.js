@@ -579,7 +579,11 @@
       toast('your picture is up');
     });
 
-    document.addEventListener('pointerdown', () => Sound.init(), { once: true });
+    document.addEventListener('pointerdown', () => {
+      Sound.init();
+      Particles.init();
+      Music.init();
+    }, { once: true });
 
     showWelcome();
   }
