@@ -1,0 +1,13 @@
+{
+  "name": "The Keepsake Box",
+  "short_name": "Keepsake Box",
+  "description": "A box with a heart that has moods. Send notes, doodles and secrets to someone you love.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#1e1612",
+  "theme_color": "#1e1612",
+  "icons": [
+    { "src": "/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
+  ]
+}

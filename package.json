@@ -1,0 +1,16 @@
+{
+  "name": "keepsake-box",
+  "version": "1.0.0",
+  "description": "The Keepsake Box — an interactive lovebox. A wooden box with a heart that has moods, a keeper's diary, trinkets and a growing garden. Send notes, sketches and secrets to someone you love.",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "express": "^4.21.2",
+    "ws": "^8.18.0"
+  }
+}

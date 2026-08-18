@@ -1,0 +1,430 @@
+/* ============================================================
+   The Keepsake Box — sender page styles
+   ============================================================ */
+
+.sendwrap {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 24px 18px;
+  position: relative;
+  z-index: 2;
+}
+
+.sendcard {
+  width: min(94vw, 460px);
+  background: var(--paper);
+  border-radius: 24px;
+  box-shadow: 0 30px 70px rgba(0, 0, 0, 0.5);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.sendcard__head {
+  padding: 20px 22px 16px;
+  background:
+    radial-gradient(120% 90% at 50% 0%, color-mix(in srgb, var(--wood-light) 22%, #fff) 0%, transparent 60%),
+    linear-gradient(180deg, #f2e6cf, var(--paper));
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+.sendcard__title {
+  font-family: "Caveat", cursive;
+  font-size: 1.9rem;
+  font-weight: 600;
+  line-height: 1.1;
+}
+
+.sendcard__meta {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 6px;
+  font-size: 0.68rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+}
+
+.sendcard__presence {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.sendcard__presence i {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #9aa28a;
+  box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.06);
+}
+
+.sendcard__presence.is-on i {
+  background: #6fae62;
+  animation: dotpulse 2s ease-in-out infinite;
+}
+
+.sendcard__body {
+  padding: 20px 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.sendcard__tabs {
+  display: flex;
+  gap: 6px;
+  background: color-mix(in srgb, var(--ink) 8%, transparent);
+  border-radius: 999px;
+  padding: 4px;
+}
+
+.sendcard__tab {
+  flex: 1;
+  padding: 9px 4px;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  transition: background 250ms, color 250ms, box-shadow 250ms;
+}
+
+.sendcard__tab.is-on {
+  background: var(--paper);
+  color: var(--ink);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.14);
+}
+
+.field label {
+  display: block;
+  font-size: 0.62rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  margin-bottom: 6px;
+}
+
+.pane {
+  display: none;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.pane.is-on {
+  display: flex;
+}
+
+textarea.msg {
+  width: 100%;
+  min-height: 130px;
+  background: #fffdf6;
+  border: 1px solid color-mix(in srgb, var(--ink) 22%, transparent);
+  border-radius: 14px;
+  padding: 13px 15px;
+  font-family: "Caveat", cursive;
+  font-size: 1.35rem;
+  line-height: 1.4;
+  resize: vertical;
+  outline: none;
+  transition: border-color 200ms, box-shadow 200ms;
+}
+
+textarea.msg:focus {
+  border-color: color-mix(in srgb, var(--heart) 55%, var(--ink));
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--heart) 16%, transparent);
+}
+
+.secret-toggle {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.85rem;
+  color: var(--ink);
+}
+
+.secret-toggle input {
+  display: none;
+}
+
+.secret-toggle .track {
+  width: 46px;
+  height: 26px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--ink) 24%, transparent);
+  position: relative;
+  flex: 0 0 auto;
+  transition: background 250ms;
+}
+
+.secret-toggle .track::after {
+  content: "";
+  position: absolute;
+  left: 3px;
+  top: 3px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #fffdf6;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+  transition: transform 250ms var(--ease-spring);
+}
+
+.secret-toggle input:checked + .track {
+  background: var(--heart);
+}
+
+.secret-toggle input:checked + .track::after {
+  transform: translateX(20px);
+}
+
+.secret-toggle .cap {
+  line-height: 1.35;
+}
+
+/* doodle pad */
+.doodle {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: center;
+}
+
+.doodle__canvas {
+  width: min(72vw, 320px);
+  aspect-ratio: 1;
+  background: #fffdf6;
+  border-radius: 12px;
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.08);
+  touch-action: none;
+  cursor: crosshair;
+  image-rendering: pixelated;
+}
+
+.doodle__palette {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.doodle__palette button {
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  border: 2px solid transparent;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
+  transition: transform 150ms var(--ease-spring);
+}
+
+.doodle__palette button.is-on {
+  border-color: var(--ink);
+  transform: scale(1.12);
+}
+
+.doodle__tools {
+  display: flex;
+  gap: 10px;
+}
+
+.doodle__tools .btn {
+  padding: 8px 14px;
+  font-size: 0.78rem;
+  box-shadow: none;
+  border: 1px solid color-mix(in srgb, var(--ink) 18%, transparent);
+}
+
+/* trinket picker */
+.trinkets-pick {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+}
+
+.trinkets-pick .trinket-cell.is-on {
+  border: 2px solid var(--heart);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--heart) 18%, transparent);
+}
+
+/* send button */
+.sendbtn {
+  width: 100%;
+  padding: 16px;
+  border-radius: 16px;
+  background: linear-gradient(180deg, color-mix(in srgb, var(--heart) 88%, #fff 12%), var(--heart-dark));
+  color: #fff7ec;
+  font-size: 1.05rem;
+  letter-spacing: 0.06em;
+  font-weight: 600;
+  box-shadow: 0 6px 22px color-mix(in srgb, var(--heart) 45%, transparent);
+  transition: transform 200ms var(--ease-spring), opacity 200ms;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  position: relative;
+  overflow: hidden;
+}
+
+.sendbtn:active {
+  transform: scale(0.97);
+}
+
+.sendbtn:disabled {
+  opacity: 0.55;
+  pointer-events: none;
+}
+
+.sendbtn .heart-ico {
+  font-size: 1.25rem;
+  animation: sendbeat 1.4s ease-in-out infinite;
+}
+
+@keyframes sendbeat {
+  0%, 100% { transform: scale(1); }
+  12% { transform: scale(1.25); }
+  24% { transform: scale(1); }
+  36% { transform: scale(1.15); }
+  48% { transform: scale(1); }
+}
+
+.sendbtn.is-sent {
+  background: linear-gradient(180deg, #7fb069, #5d8a4e);
+  box-shadow: 0 6px 22px rgba(111, 174, 98, 0.4);
+}
+
+.sendbtn .fly {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #fff;
+  animation: fly-up 900ms var(--ease-out) forwards;
+  opacity: 0;
+}
+
+@keyframes fly-up {
+  0% { opacity: 1; transform: translate(0, 0) scale(1); }
+  100% { opacity: 0; transform: translate(var(--fx), var(--fy)) scale(0.4); }
+}
+
+/* sender name + signature */
+.name-in {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--ink-soft);
+  font-size: 0.85rem;
+}
+
+.name-in input {
+  flex: 1;
+  min-width: 0;
+}
+
+/* "they spun it" banner */
+.spun-banner {
+  position: fixed;
+  left: 50%;
+  top: 18px;
+  transform: translate(-50%, -80px);
+  z-index: 85;
+  background: linear-gradient(180deg, color-mix(in srgb, var(--heart) 88%, #fff 12%), var(--heart-dark));
+  color: #fff7ec;
+  font-family: "Caveat", cursive;
+  font-size: 1.25rem;
+  padding: 12px 24px;
+  border-radius: 999px;
+  box-shadow: 0 10px 34px color-mix(in srgb, var(--heart) 45%, transparent);
+  transition: transform 600ms var(--ease-spring);
+  max-width: 90vw;
+  text-align: center;
+  pointer-events: none;
+}
+
+.spun-banner.is-on {
+  transform: translate(-50%, 0);
+}
+
+/* hearts burst (shared with the box page) */
+.hearts-burst {
+  position: fixed;
+  inset: 0;
+  z-index: 80;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.hearts-burst i {
+  position: absolute;
+  font-size: 22px;
+  animation: float-up 2.6s var(--ease-out) forwards;
+  opacity: 0;
+}
+
+@keyframes float-up {
+  0% { opacity: 0; transform: translate(0, 0) scale(0.5) rotate(-12deg); }
+  12% { opacity: 1; }
+  100% { opacity: 0; transform: translate(var(--dx), var(--dy)) scale(1.25) rotate(14deg); }
+}
+
+.wrongbox {
+  color: #f2e6cf;
+  text-align: center;
+  padding: 30px 20px;
+}
+
+.wrongbox h1 {
+  font-family: "Caveat", cursive;
+  font-size: 2.2rem;
+  margin-bottom: 10px;
+}
+
+.wrongbox p {
+  color: rgba(242, 230, 207, 0.65);
+  line-height: 1.6;
+  margin-bottom: 18px;
+}
+
+.pairing {
+  width: min(92vw, 380px);
+  background: var(--paper);
+  border-radius: 20px;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  text-align: center;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.45);
+}
+
+.pairing h1 {
+  font-family: "Caveat", cursive;
+  font-size: 1.9rem;
+  font-weight: 600;
+}
+
+.pairing p {
+  font-size: 0.85rem;
+  color: var(--ink-soft);
+  line-height: 1.5;
+}
+
+.pairing input {
+  text-align: center;
+  letter-spacing: 0.35em;
+  text-transform: uppercase;
+  font-weight: 700;
+  font-size: 1.15rem;
+}
+
+.pairing .err {
+  color: var(--heart-dark);
+  font-size: 0.8rem;
+  min-height: 1.2em;
+}
