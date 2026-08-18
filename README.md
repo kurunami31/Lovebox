@@ -13,6 +13,7 @@ Open the box page and the **first thing you see is a QR code** — scan it with 
 - **The lilies note** — an ancient-Egypt lily fact and a declaration that Noelle is the most beautiful person of all, styled with a lily
 - **A date invitation** — an invitation card on the box page: *"Noelle, will you go out with me?"* — no details, just one button. When she taps **yes**, the heart bursts and it's sealed forever
 - **Lily motif** — a soft lily blooms in the welcome screen, in the memories header and on the lilies note
+- **Lily borders** — the welcome QR card and the date invitation are wrapped in two hand-drawn lily border frames
 - **Memories gallery** — Noelle's photos sit in a polaroid grid; tap one to open a full-screen lightbox
 - **Notes** — arrive live, in a handwritten font, with optional photo attachments
 - **Sealed secrets** — a sender ticks "seal it"; to read it, tap the wax and the heart spins to break the seal
@@ -61,3 +62,4 @@ This is a plain Node/Express + WebSocket app — it also runs on any VPS, Raspbe
 - `public/css/base.css` — everything, soft and warm
 - `public/js/heart.js` — the pixel heart · `share.js` — QR · `sound.js` — WebAudio
 - `public/lily.svg` — the lily motif
+- `public/borders/` — the two lily border frames (welcome + invitation cards)

@@ -1,6 +1,7 @@
 node_modules/
 data/
 Noelle/
+Lily border*.png
 *.log
 .DS_Store
 .env
