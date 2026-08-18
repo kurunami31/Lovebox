@@ -3,102 +3,65 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#1e1612">
-<meta name="description" content="Send a note, a doodle or a secret to someone's keepsake box.">
+<meta name="theme-color" content="#f7f1e8">
+<meta name="description" content="Send a note, a secret or a heart to someone's keepsake box.">
 <link rel="manifest" href="/manifest.json">
 <link rel="icon" href="/icon.svg" type="image/svg+xml">
 <title>Send to the box</title>
 <link rel="stylesheet" href="/css/base.css">
-<link rel="stylesheet" href="/css/send.css">
 </head>
 <body>
 
-<div class="scene">
-  <div class="sendwrap" id="sendwrap">
-    <div class="wrongbox hidden" id="wrongbox">
-      <h1>that box isn&rsquo;t here</h1>
-      <p>The code doesn&rsquo;t match any box. Check the card the box came with, and try again.</p>
-      <button class="btn btn--primary" id="wrongback">try again</button>
-    </div>
+<div class="page page--send">
+  <div class="wrongbox hidden" id="wrongbox">
+    <h1>that box isn&#8217;t here</h1>
+    <p>Check the code on the card that came with the box, and try again.</p>
+    <button class="btn btn--primary" id="wrong-back">try again</button>
+  </div>
 
-    <div class="pairing hidden" id="pairing">
-      <h1>which box?</h1>
-      <p>Enter the code printed on the card that came with the box.</p>
-      <input class="text" id="pair-code" maxlength="5" placeholder="CODE" autocomplete="off">
-      <div class="err" id="pair-err"></div>
-      <button class="btn btn--primary" id="pair-go">open the box</button>
-    </div>
+  <div class="pair hidden" id="pair">
+    <h1>which box?</h1>
+    <p>Enter the code from the card that came with the box.</p>
+    <input class="text" id="pair-code" maxlength="5" placeholder="CODE" autocomplete="off">
+    <p class="err hidden" id="pair-err"></p>
+    <button class="btn btn--primary" id="pair-go">open the box</button>
+  </div>
 
-    <div class="sendcard hidden" id="sendcard">
-      <div class="sendcard__head">
-        <div class="sendcard__title" id="sc-title">The Keepsake Box</div>
-        <div class="sendcard__meta">
-          <span>code <b id="sc-code"></b></span>
-          <span class="sendcard__presence" id="sc-presence"><i></i><span>connecting&hellip;</span></span>
-        </div>
+  <div class="sendcard hidden" id="sendcard">
+    <header class="sendcard__head">
+      <div>
+        <h1 id="sc-title">The Keepsake Box</h1>
+        <div class="code">code <b id="sc-code"></b></div>
       </div>
-      <div class="sendcard__body">
-        <div class="sendcard__tabs">
-          <button class="sendcard__tab is-on" data-tab="note">note</button>
-          <button class="sendcard__tab" data-tab="doodle">doodle</button>
-          <button class="sendcard__tab" data-tab="trinket">trinket</button>
-        </div>
+      <div class="presence" id="sc-presence"><i></i><span>connecting&hellip;</span></div>
+    </header>
 
-        <div class="pane is-on" id="pane-note">
-          <div class="field"><label>your note</label>
-            <textarea class="msg" id="note-text" maxlength="900" placeholder="Write like you\u2019d fold it into paper\u2026"></textarea>
-          </div>
-          <label class="secret-toggle">
-            <input type="checkbox" id="note-secret">
-            <span class="track"></span>
-            <span class="cap">seal it &mdash; it goes to the secret drawer, opened only by a knock</span>
-          </label>
-        </div>
+    <label class="field">your note
+      <textarea class="msg" id="note-text" maxlength="900" placeholder="Write like you&#8217;d fold it into paper&#8230;"></textarea>
+    </label>
 
-        <div class="pane" id="pane-doodle">
-          <div class="field"><label>a little drawing</label></div>
-          <div class="doodle">
-            <canvas class="doodle__canvas" id="doodle"></canvas>
-            <div class="doodle__palette" id="doodle-palette"></div>
-            <div class="doodle__tools">
-              <button class="btn btn--small" id="doodle-clear">clear</button>
-              <button class="btn btn--small" id="doodle-undo">undo</button>
-            </div>
-          </div>
-        </div>
+    <label class="seal-toggle">
+      <input type="checkbox" id="note-seal">
+      <span class="track"></span>
+      <span class="cap">seal it &#8212; they have to spin the heart to break the wax</span>
+    </label>
 
-        <div class="pane" id="pane-trinket">
-          <div class="field"><label>pick a small treasure</label></div>
-          <div class="trinkets-pick" id="trinkets-pick"></div>
-          <div class="field" style="margin-top:4px"><label>a word with it (optional)</label>
-            <textarea class="msg" id="trinket-note" maxlength="280" placeholder="e.g. I found this and thought of you" style="min-height:56px"></textarea>
-          </div>
-        </div>
+    <label class="field">your name
+      <input class="text" id="sender-name" maxlength="30" placeholder="how they know you">
+    </label>
 
-        <div class="field"><label>your name</label>
-          <div class="name-in">
-            <input class="text" id="sender-name" maxlength="30" placeholder="how they know you">
-            <span class="cap" id="sender-char"></span>
-          </div>
-        </div>
-
-        <button class="sendbtn" id="send-btn" disabled>
-          <span class="heart-ico">&#10084;</span>
-          <span id="send-label">send</span>
-        </button>
-      </div>
+    <div class="sendcard__actions">
+      <button class="btn btn--heart" id="btn-heart" title="send a heart" aria-label="send a heart">&#10084;</button>
+      <button class="btn btn--primary sendbtn" id="send-btn" disabled>send</button>
     </div>
   </div>
 </div>
 
-<div class="spun-banner" id="spun">they spun the heart back for you</div>
+<div class="spun" id="spun">they spun the heart back for you</div>
 <div class="hearts-burst" id="burst"></div>
 
 <script src="/js/sound.js"></script>
-<script src="/js/net.js"></script>
 <script src="/js/heart.js"></script>
-<script src="/js/trinkets.js"></script>
-<script src="/js/messages.js"></script>
 <script src="/js/sender.js"></script>
 </body>
 </html>

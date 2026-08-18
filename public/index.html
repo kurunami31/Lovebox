@@ -3,207 +3,88 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#1e1612">
-<meta name="description" content="A keepsake box with a heart that has moods. Send notes, doodles and secrets to someone you love.">
+<meta name="theme-color" content="#f7f1e8">
+<meta name="description" content="A little box that collects notes, secrets and hearts from the people you love.">
 <link rel="manifest" href="/manifest.json">
 <link rel="icon" href="/icon.svg" type="image/svg+xml">
 <title>The Keepsake Box</title>
 <link rel="stylesheet" href="/css/base.css">
-<link rel="stylesheet" href="/css/box.css">
 </head>
 <body>
 
-<div class="scene">
-  <header class="boxhead">
-    <div>
-      <div class="boxhead__title" id="head-title">The Keepsake Box</div>
-      <div class="boxhead__code" id="head-code">&middot;&middot;&middot;&middot;&middot;</div>
-    </div>
-    <div class="boxhead__right">
-      <button class="iconbtn" id="btn-share" title="Share this box" aria-label="Share this box">&#10037;</button>
-      <button class="iconbtn iconbtn--accent" id="btn-tune" title="Tune the box" aria-label="Tune the box">&#10022;</button>
-    </div>
-  </header>
-
-  <main class="stage">
-    <div class="box">
-      <div class="box__lid">
-        <div class="box__lid-front"></div>
-      </div>
-      <div class="box__hinge"></div>
-      <div class="box__clasp"></div>
-      <div class="interior">
-        <div class="interior__mirror" id="interior-view"></div>
-      </div>
-      <div class="box__body"></div>
-      <div class="heart-mount" id="heart-mount">
-        <canvas id="heart"></canvas>
-      </div>
-    </div>
-    <div class="status" id="status-line"></div>
-  </main>
-
-  <nav class="dock">
-    <button class="dock__btn" data-sheet="notes">
-      <span class="ico">&#9993;</span>notes
-      <span class="dot"></span>
-    </button>
-    <button class="dock__btn" data-sheet="drawer">
-      <span class="ico">&#10022;</span>secret
-      <span class="dot"></span>
-    </button>
-    <button class="dock__btn" data-sheet="trinkets">
-      <span class="ico">&#10038;</span>trinkets
-      <span class="dot"></span>
-    </button>
-    <button class="dock__btn" data-sheet="garden">
-      <span class="ico">&#10075;</span>garden
-      <span class="dot"></span>
-    </button>
-    <button class="dock__btn" data-sheet="diary">
-      <span class="ico">&#9998;</span>diary
-      <span class="dot"></span>
-    </button>
-  </nav>
+<!-- first thing: the QR to share this box -->
+<div class="welcome" id="welcome">
+  <div class="welcome__card">
+    <h1 class="welcome__title">scan to send</h1>
+    <p class="welcome__sub">Point another phone at this code and a note will find its way into the box.</p>
+    <canvas class="welcome__qr" id="welcome-qr"></canvas>
+    <div class="welcome__code">code <b id="welcome-code">•••••</b></div>
+    <button class="btn btn--primary" id="welcome-open">open the box</button>
+  </div>
 </div>
 
-<!-- notes sheet -->
-<section class="sheet" id="notes-sheet">
-  <div class="sheet__handle"></div>
-  <div class="sheet__head">
-    <div class="sheet__title">notes</div>
-    <div class="sheet__sub" id="notes-sub">everything that has arrived</div>
-    <button class="sheet__close" aria-label="Close">&#10005;</button>
-  </div>
-  <div class="sheet__body noteview" id="notes-list"></div>
-</section>
-
-<!-- secret drawer sheet -->
-<section class="sheet" id="drawer-sheet">
-  <div class="sheet__handle"></div>
-  <div class="sheet__head">
-    <div class="sheet__title">the secret drawer</div>
-    <div class="sheet__sub">opened only by the right knock</div>
-    <button class="sheet__close" aria-label="Close">&#10005;</button>
-  </div>
-  <div class="sheet__body noteview" id="drawer-content"></div>
-</section>
-
-<!-- trinkets sheet -->
-<section class="sheet" id="trinkets-sheet">
-  <div class="sheet__handle"></div>
-  <div class="sheet__head">
-    <div class="sheet__title">the trinket drawer</div>
-    <div class="sheet__sub">small things, kept</div>
-    <button class="sheet__close" aria-label="Close">&#10005;</button>
-  </div>
-  <div class="sheet__body">
-    <div class="trinket-detail" id="trinket-detail"></div>
-    <div class="trinkets-grid" id="trinkets-grid"></div>
-  </div>
-</section>
-
-<!-- garden sheet -->
-<section class="sheet" id="garden-sheet">
-  <div class="sheet__handle"></div>
-  <div class="sheet__head">
-    <div class="sheet__title">the garden</div>
-    <div class="sheet__sub">it grows when the box is loved</div>
-    <button class="sheet__close" aria-label="Close">&#10005;</button>
-  </div>
-  <div class="sheet__body">
-    <div class="garden">
-      <div class="garden__scene"><canvas id="garden-canvas" width="208" height="208"></canvas></div>
-      <div class="garden__name" id="garden-name">the garden</div>
-      <div class="garden__meta" id="garden-stage"></div>
-      <div class="garden__bar"><i></i></div>
-      <div class="garden__meta" id="garden-meta"></div>
+<div class="page">
+  <header class="top">
+    <div class="top__left">
+      <h1 class="box-name" id="box-name">The Keepsake Box</h1>
+      <div class="code">code <b id="box-code">•••••</b></div>
     </div>
-  </div>
-</section>
+    <button class="btn btn--small" id="btn-share">&#10037; share</button>
+  </header>
 
-<!-- diary sheet -->
-<section class="sheet" id="diary-sheet">
-  <div class="sheet__handle"></div>
-  <div class="sheet__head">
-    <div class="sheet__title">the Keeper&rsquo;s diary</div>
-    <div class="sheet__sub">in their own words</div>
-    <button class="sheet__close" aria-label="Close">&#10005;</button>
-  </div>
-  <div class="sheet__body">
-    <div class="diary-list" id="diary-list"></div>
-  </div>
-</section>
+  <main class="card">
+    <div class="heartpod" id="heartpod">
+      <canvas id="heart" width="66" height="54"></canvas>
+    </div>
+    <p class="status" id="status">the box is listening</p>
 
-<!-- tune sheet -->
-<section class="sheet" id="tune-sheet">
-  <div class="sheet__handle"></div>
-  <div class="sheet__head">
-    <div class="sheet__title">tune the box</div>
-    <div class="sheet__sub">make it yours</div>
-    <button class="sheet__close" id="tune-close" aria-label="Close">&#10005;</button>
-  </div>
-  <div class="sheet__body"></div>
-</section>
+    <section class="notes" id="notes"></section>
+
+    <div class="empty hidden" id="empty">
+      <p class="empty__big">nothing yet</p>
+      <p>share the box and the first note will find its way here.</p>
+      <button class="btn btn--primary" id="btn-empty-share">share the box</button>
+    </div>
+  </main>
+</div>
 
 <div class="scrim" id="scrim"></div>
 
 <!-- share modal -->
-<div class="sharebox" id="sharebox">
-  <div class="sharebox__card">
+<div class="modal" id="sharebox" aria-hidden="true">
+  <div class="modal__card">
+    <button class="modal__close" id="share-close" aria-label="close">&#215;</button>
     <h2 id="share-title">The Keepsake Box</h2>
-    <div class="sharebox__sub" id="share-hint">scan to send a note</div>
-    <div class="sharebox__qr"><canvas id="share-qr"></canvas></div>
-    <div class="sharebox__code" id="share-code"></div>
-    <div class="sharebox__hint">anyone with this code can send you notes, doodles and secrets</div>
-    <div class="sharebox__actions">
-      <button class="btn btn--primary" id="share-print">print a gift card</button>
-      <button class="btn" id="share-copy">copy link</button>
-    </div>
-    <button class="sheet__close" id="share-close" aria-label="Close" style="position:absolute;top:14px;right:14px">&#10005;</button>
+    <p class="modal__sub">scan to send a note, a secret, or a heart</p>
+    <canvas class="modal__qr" id="share-qr"></canvas>
+    <div class="code">code <b id="share-code"></b></div>
+    <button class="btn" id="share-copy">copy link</button>
   </div>
-</div>
-
-<!-- printable gift card -->
-<div class="print-card">
-  <h1 id="print-name">The Keepsake Box</h1>
-  <div class="p-sub">a box that holds the ones you love</div>
-  <div class="p-qr"><canvas id="print-qr" width="264" height="264"></canvas></div>
-  <div class="p-code" id="print-code"></div>
-  <div class="p-hint">scan with any phone camera to send a note, a doodle, or a secret</div>
-  <div class="p-foot">The Keepsake Box &middot; keepsakebox.app</div>
-</div>
-
-<!-- onboarding -->
-<div class="onboard hidden" id="onboard">
-  <div class="onboard__heart"><canvas id="ob-heart" data-cell="7"></canvas></div>
-  <h1 id="ob-title"></h1>
-  <p id="ob-desc"></p>
-  <div class="field">
-    <label id="ob-label"></label>
-    <input class="text" id="ob-input" autocomplete="off"
-           style="background:#2c2017;color:#f2e6cf;border-color:rgba(242,230,207,0.25)">
-  </div>
-  <div style="display:flex;gap:10px;justify-content:center">
-    <button class="btn btn--ghost hidden" id="ob-back">back</button>
-    <button class="btn btn--primary" id="ob-next">next</button>
-  </div>
-  <div class="steps" id="ob-dots"></div>
 </div>
 
 <div class="toast" id="toast"></div>
 
+<!-- make a box -->
+<div class="onboard hidden" id="onboard">
+  <div class="onboard__card">
+    <h2>an empty box</h2>
+    <p class="onboard__sub">Give it a name and leave the first note inside. The box makes a code for you to share.</p>
+    <input class="text" id="ob-name" maxlength="60" placeholder="name for this box (optional)" autocomplete="off">
+    <textarea class="text msg" id="ob-greeting" maxlength="900" placeholder="the first note they find inside (optional)"></textarea>
+    <button class="btn btn--primary" id="ob-go">make the box</button>
+    <div class="onboard__alt">already have a code? <button class="link" id="ob-have">enter it</button></div>
+    <div class="hidden" id="ob-enter">
+      <input class="text" id="ob-code" maxlength="5" placeholder="CODE" autocomplete="off">
+      <button class="btn" id="ob-join">open my box</button>
+    </div>
+    <p class="err hidden" id="ob-err">that code doesn&#8217;t match any box</p>
+  </div>
+</div>
+
 <script src="/js/vendor/qrcode.min.js"></script>
 <script src="/js/sound.js"></script>
-<script src="/js/net.js"></script>
 <script src="/js/heart.js"></script>
-<script src="/js/trinkets.js"></script>
-<script src="/js/garden.js"></script>
-<script src="/js/theme.js"></script>
-<script src="/js/box.js"></script>
-<script src="/js/messages.js"></script>
 <script src="/js/share.js"></script>
-<script src="/js/settings.js"></script>
 <script src="/js/app.js"></script>
 </body>
 </html>
