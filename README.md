@@ -8,9 +8,10 @@ Open the box page and the **first thing you see is a QR code** — scan it with 
 
 - **QR-first welcome** — the box's share code is the landing screen
 - **Notes** — arrive live, in a handwritten font
+- **Pictures** — senders can attach a photo (gallery or camera) to a note; it shows in the box. The box owner can also upload their own cover picture at the top of the box page (change or remove it anytime)
 - **Sealed secrets** — a sender ticks "seal it"; to read it, tap the wax and the heart spins to break the seal
 - **The heart** — spins when a note arrives or when a sender sends a heart; each message grows the box
-- **Sender page** (`/send.html?box=CODE`) — note, sealed secret, or a heart; shows if the box owner is online
+- **Sender page** (`/send.html?box=CODE`) — note, photo, sealed secret, or a heart; shows if the box owner is online
 - One box per code, no accounts. Codes are 5 characters.
 
 ## Run it

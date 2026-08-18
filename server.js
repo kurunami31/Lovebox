@@ -30,7 +30,7 @@ function load() {
 }
 load();
 
-app.use(express.json({ limit: '1mb' }));
+app.use(express.json({ limit: '16mb' }));
 app.use(express.static(path.join(__dirname, 'public')));
 
 const ALPHABET = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
@@ -43,12 +43,20 @@ function newCode() {
   return code;
 }
 
+function cleanImg(v) {
+  if (typeof v !== 'string') return '';
+  if (!/^data:image\/(jpeg|png|gif|webp);base64,/.test(v)) return '';
+  if (v.length > 3000000) return '';
+  return v;
+}
+
 function cleanNote(n) {
   return {
     id: String(n.id || '').slice(0, 40),
     ts: n.ts || Date.now(),
     sender: String(n.sender || '').slice(0, 30) || 'Someone',
     content: String(n.content || '').slice(0, 900),
+    img: cleanImg(n.img),
     sealed: !!n.sealed,
     read: !!n.read,
   };
@@ -60,6 +68,7 @@ function boxView(code) {
     code: b.code,
     name: b.name || 'The Keepsake Box',
     createdAt: b.createdAt,
+    cover: cleanImg(b.cover),
     notes: (b.notes || []).map(cleanNote),
     reads: b.reads || 0,
     spins: b.spins || 0,
@@ -103,6 +112,19 @@ app.get('/api/box/:code', (req, res) => {
   const code = String(req.params.code || '').toUpperCase();
   if (!store.boxes[code]) return res.status(404).json({ error: 'no_such_box' });
   res.json(boxView(code));
+});
+
+app.patch('/api/box/:code', (req, res) => {
+  const code = String(req.params.code || '').toUpperCase();
+  const b = store.boxes[code];
+  if (!b) return res.status(404).json({ error: 'no_such_box' });
+  const body = req.body || {};
+  if ('cover' in body) {
+    b.cover = cleanImg(body.cover);
+    persist();
+    broadcast(code, { type: 'cover', cover: b.cover });
+  }
+  res.json({ ok: true });
 });
 
 /* ---------------- websocket ---------------- */
@@ -152,14 +174,16 @@ wss.on('connection', (ws, req) => {
 
     switch (m.type) {
       case 'note': {
-        const content = String(m.content || '').trim();
-        if (!content) return;
+        const content = String(m.content || '').trim().slice(0, 900);
+        const img = cleanImg(m.img);
+        if (!content && !img) return;
         const sender = String(m.sender || '').trim().slice(0, 30) || 'Someone';
         const note = {
           id: Math.random().toString(36).slice(2, 10),
           ts: Date.now(),
           sender,
-          content: content.slice(0, 900),
+          content,
+          img,
           sealed: !!m.sealed,
           read: false,
         };

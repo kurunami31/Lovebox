@@ -33,6 +33,18 @@
   </header>
 
   <main class="card">
+    <div class="cover" id="cover-wrap">
+      <img class="cover__img hidden" id="cover-img" alt="cover picture">
+      <div class="cover__none" id="cover-none">
+        <button class="btn btn--small" id="btn-set-cover">&#9650; add your picture</button>
+      </div>
+      <div class="cover__tools hidden" id="cover-tools">
+        <button class="link" id="btn-change-cover">change</button>
+        <button class="link" id="btn-remove-cover">remove</button>
+      </div>
+      <input type="file" id="cover-file" accept="image/*" class="hidden">
+    </div>
+
     <div class="heartpod" id="heartpod">
       <canvas id="heart" width="66" height="54"></canvas>
     </div>

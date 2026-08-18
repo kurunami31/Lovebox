@@ -48,10 +48,53 @@
 
   /* ---------------- state & rendering ---------------- */
 
-  const state = { notes: [], name: 'The Keepsake Box', code: '', senders: 0 };
+  const state = { notes: [], name: 'The Keepsake Box', code: '', cover: '', senders: 0 };
 
   function status(text) {
     $('status').textContent = text;
+  }
+
+  async function fileToDataUrl(file) {
+    for (const max of [1400, 1000, 700]) {
+      try {
+        let bmp;
+        if ('createImageBitmap' in window) {
+          bmp = await createImageBitmap(file, { imageOrientation: 'from-image' });
+        } else {
+          const url = URL.createObjectURL(file);
+          const img = new Image();
+          await new Promise((res, rej) => { img.onload = res; img.onerror = rej; img.src = url; });
+          bmp = img;
+        }
+        const scale = Math.min(1, max / Math.max(bmp.width, bmp.height));
+        const cv = document.createElement('canvas');
+        cv.width = Math.max(1, Math.round(bmp.width * scale));
+        cv.height = Math.max(1, Math.round(bmp.height * scale));
+        cv.getContext('2d').drawImage(bmp, 0, 0, cv.width, cv.height);
+        if ('close' in bmp) bmp.close();
+        const url = cv.toDataURL('image/jpeg', 0.72);
+        if (url.length > 2000000) continue;
+        return url;
+      } catch { return null; }
+    }
+    return null;
+  }
+
+  function renderCover() {
+    const img = $('cover-img');
+    const none = $('cover-none');
+    const tools = $('cover-tools');
+    const has = !!state.cover;
+    img.classList.toggle('hidden', !has);
+    none.classList.toggle('hidden', has);
+    tools.classList.toggle('hidden', !has);
+    if (has) {
+      img.src = state.cover;
+      const pod = $('cover-wrap');
+      pod.classList.remove('is-popped');
+      void pod.offsetWidth;
+      pod.classList.add('is-popped');
+    }
   }
 
   function renderHead() {
@@ -112,7 +155,15 @@
         seal.append(hint, wax);
         card.appendChild(seal);
       } else {
-        card.appendChild(body);
+        if (n.img) {
+          const im = new Image();
+          im.className = 'note__img';
+          im.src = n.img;
+          im.alt = '';
+          im.loading = 'lazy';
+          card.appendChild(im);
+        }
+        if (n.content) card.appendChild(body);
       }
 
       if (n.sealed && !n.read) {
@@ -240,6 +291,7 @@
       const b = await res.json();
       state.code = b.code;
       state.name = b.name || 'The Keepsake Box';
+      state.cover = b.cover || '';
       state.notes = b.notes || [];
       boxCode = b.code;
       localStorage.setItem('keepsake.code', b.code);
@@ -249,6 +301,7 @@
 
   function run() {
     renderHead();
+    renderCover();
     renderNotes();
     moodStatus();
 
@@ -268,6 +321,9 @@
         spinHeart();
         status('they spun the heart back!');
         setTimeout(() => moodStatus(), 2600);
+      } else if (m.type === 'cover') {
+        state.cover = m.cover || '';
+        renderCover();
       } else if (m.type === 'presence') {
         state.senders = m.senders || 0;
         moodStatus();
@@ -290,6 +346,35 @@
       } catch {
         toast(Share.senderUrl(boxCode));
       }
+    });
+
+    /* cover picture */
+    $('btn-set-cover').addEventListener('click', () => $('cover-file').click());
+    $('btn-change-cover').addEventListener('click', () => $('cover-file').click());
+    $('btn-remove-cover').addEventListener('click', async () => {
+      state.cover = '';
+      renderCover();
+      await fetch(`/api/box/${boxCode}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ cover: '' }),
+      }).catch(() => {});
+      toast('picture removed');
+    });
+    $('cover-file').addEventListener('change', async (e) => {
+      const file = e.target.files && e.target.files[0];
+      e.target.value = '';
+      if (!file) return;
+      const url = await fileToDataUrl(file);
+      if (!url) { toast('that picture was too big to carry'); return; }
+      state.cover = url;
+      renderCover();
+      await fetch(`/api/box/${boxCode}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ cover: url }),
+      }).catch(() => {});
+      toast('your picture is up');
     });
 
     document.addEventListener('pointerdown', () => Sound.init(), { once: true });

@@ -467,6 +467,80 @@ body {
 .pair h1, .wrongbox h1 { margin: 0; font-size: 26px; font-weight: 400; }
 .pair p, .wrongbox p { margin: 0; color: var(--ink-soft); font-size: 14px; }
 
+/* ---------------- cover picture ---------------- */
+
+.cover { position: relative; margin-bottom: 6px; }
+.cover__img {
+  width: 100%;
+  max-height: 300px;
+  object-fit: cover;
+  border-radius: 18px;
+  border: 1px solid var(--line);
+  box-shadow: 0 8px 24px rgba(90, 60, 40, 0.14);
+  display: block;
+}
+.cover.is-popped { animation: coverpop 0.4s ease; }
+@keyframes coverpop {
+  0% { transform: scale(0.94); opacity: 0.4; }
+  100% { transform: scale(1); opacity: 1; }
+}
+.cover__none {
+  border: 2px dashed var(--line);
+  border-radius: 18px;
+  padding: 18px;
+  text-align: center;
+  color: var(--ink-soft);
+}
+.cover__tools {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  display: flex;
+  gap: 10px;
+  background: rgba(255, 253, 249, 0.92);
+  padding: 4px 12px;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  font-size: 13px;
+}
+
+/* ---------------- photo notes ---------------- */
+
+.note__img {
+  width: 100%;
+  border-radius: 12px;
+  margin-bottom: 8px;
+  display: block;
+  border: 1px solid var(--line);
+}
+
+/* ---------------- sender photo picker ---------------- */
+
+.photo-pick { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+.photo-preview { position: relative; margin-top: 8px; }
+.photo-preview img {
+  width: 84px;
+  height: 84px;
+  object-fit: cover;
+  border-radius: 14px;
+  border: 1px solid var(--line);
+  box-shadow: 0 4px 12px rgba(90, 60, 40, 0.14);
+}
+.photo-preview__x {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  border: none;
+  background: var(--ink);
+  color: #fff;
+  font-size: 14px;
+  line-height: 1;
+  cursor: pointer;
+}
+
 /* ---------------- spun banner + hearts ---------------- */
 
 .spun {

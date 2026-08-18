@@ -6,9 +6,36 @@
 (() => {
   let boxCode = null;
   let ws = null;
+  let pendingImg = '';
 
   const $ = (id) => document.getElementById(id);
   const qs = (name) => new URLSearchParams(location.search).get(name);
+
+  async function fileToDataUrl(file) {
+    for (const max of [1000, 700, 500]) {
+      try {
+        let bmp;
+        if ('createImageBitmap' in window) {
+          bmp = await createImageBitmap(file, { imageOrientation: 'from-image' });
+        } else {
+          const url = URL.createObjectURL(file);
+          const img = new Image();
+          await new Promise((res, rej) => { img.onload = res; img.onerror = rej; img.src = url; });
+          bmp = img;
+        }
+        const scale = Math.min(1, max / Math.max(bmp.width, bmp.height));
+        const cv = document.createElement('canvas');
+        cv.width = Math.max(1, Math.round(bmp.width * scale));
+        cv.height = Math.max(1, Math.round(bmp.height * scale));
+        cv.getContext('2d').drawImage(bmp, 0, 0, cv.width, cv.height);
+        if ('close' in bmp) bmp.close();
+        const url = cv.toDataURL('image/jpeg', 0.72);
+        if (url.length > 2000000) continue;
+        return url;
+      } catch { return null; }
+    }
+    return null;
+  }
 
   function show(el) {
     document.querySelectorAll('#wrongbox, #pair, #sendcard').forEach((x) => x.classList.add('hidden'));
@@ -70,22 +97,48 @@
     const sendBtn = $('send-btn');
 
     function canSend() {
-      return text.value.trim().length > 0;
+      return text.value.trim().length > 0 || pendingImg.length > 0;
     }
     text.addEventListener('input', () => {
       sendBtn.disabled = !canSend();
       if (canSend()) sendBtn.classList.remove('is-sent');
     });
 
+    $('photo-add').addEventListener('click', () => $('photo-file').click());
+    $('photo-cam').addEventListener('click', () => $('photo-cam-file').click());
+    $('photo-file').addEventListener('change', (e) => pick(e.target.files[0]));
+    $('photo-cam-file').addEventListener('change', (e) => pick(e.target.files[0]));
+    $('photo-x').addEventListener('click', clearPhoto);
+
+    async function pick(file) {
+      if (!file) return;
+      const url = await fileToDataUrl(file);
+      if (!url) { toast('that picture was too big to carry'); return; }
+      pendingImg = url;
+      $('photo-img').src = url;
+      $('photo-preview').classList.remove('hidden');
+      sendBtn.disabled = false;
+      sendBtn.classList.remove('is-sent');
+    }
+
+    function clearPhoto() {
+      pendingImg = '';
+      $('photo-img').removeAttribute('src');
+      $('photo-preview').classList.add('hidden');
+      $('photo-file').value = '';
+      $('photo-cam-file').value = '';
+      sendBtn.disabled = !canSend();
+    }
+
     sendBtn.addEventListener('click', () => {
       if (!canSend()) return;
       const sender = $('sender-name').value.trim().slice(0, 30) || 'Someone';
       localStorage.setItem('keepsake.sendername', sender);
-      ws.send({ type: 'note', content: text.value.trim(), sealed: $('note-seal').checked, sender });
+      ws.send({ type: 'note', content: text.value.trim(), img: pendingImg, sealed: $('note-seal').checked, sender });
       Sound.noteIn();
       text.value = '';
       $('note-seal').checked = false;
-      sendBtn.disabled = true;
+      clearPhoto();
       sendBtn.textContent = 'sent \u2014 it\u2019s on its way';
       sendBtn.classList.add('is-sent');
       setTimeout(() => { sendBtn.textContent = 'send'; }, 2600);
@@ -171,6 +224,14 @@
     s.classList.add('is-on');
     clearTimeout(showSpun._t);
     showSpun._t = setTimeout(() => s.classList.remove('is-on'), 2200);
+  }
+
+  function toast(text) {
+    const t = $('spun');
+    t.textContent = text;
+    t.classList.add('is-on');
+    clearTimeout(toast._t);
+    toast._t = setTimeout(() => t.classList.remove('is-on'), 2400);
   }
 
   /* ---------------- boot ---------------- */

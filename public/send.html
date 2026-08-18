@@ -40,6 +40,19 @@
       <textarea class="msg" id="note-text" maxlength="900" placeholder="Write like you&#8217;d fold it into paper&#8230;"></textarea>
     </label>
 
+    <div class="field">add a picture
+      <div class="photo-pick">
+        <button class="btn btn--small" id="photo-add">add a photo</button>
+        <button class="btn btn--small" id="photo-cam">take one</button>
+        <input type="file" id="photo-file" accept="image/*" class="hidden">
+        <input type="file" id="photo-cam-file" accept="image/*" capture="environment" class="hidden">
+      </div>
+      <div class="photo-preview hidden" id="photo-preview">
+        <img id="photo-img" alt="attached photo">
+        <button class="photo-preview__x" id="photo-x" aria-label="remove photo">&#215;</button>
+      </div>
+    </div>
+
     <label class="seal-toggle">
       <input type="checkbox" id="note-seal">
       <span class="track"></span>
