@@ -87,6 +87,16 @@
       $('sc-code').textContent = b.code;
       const savedName = localStorage.getItem('keepsake.sendername') || '';
       $('sender-name').value = savedName;
+
+      // show invitation if exists and not confirmed
+      const invite = b.invite;
+      const inviteCard = $('invite-card');
+      if (invite && invite.asked && !invite.confirmed) {
+        inviteCard.classList.remove('hidden');
+      } else {
+        inviteCard.classList.add('hidden');
+      }
+
       show('sendcard');
       return true;
     } catch { return false; }
@@ -153,6 +163,27 @@
       btn.classList.add('is-pressed');
       burstHearts();
       showSpun();
+    });
+
+    $('invite-yes-sender').addEventListener('click', async () => {
+      if (!boxCode) return;
+      const btn = $('invite-yes-sender');
+      btn.disabled = true;
+      btn.textContent = 'saving...';
+      try {
+        await fetch(`/api/box/${boxCode}`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ invite: { confirmed: true } }),
+        });
+        $('invite-card').classList.add('hidden');
+        Sound.heart();
+        burstHearts();
+        showSpun();
+      } catch {
+        btn.disabled = false;
+        btn.textContent = 'yes \u2014 it\u2019s a date';
+      }
     });
   }
 
