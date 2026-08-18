@@ -36,19 +36,21 @@ For LAN testing, set `PUBLIC_URL` (e.g. `http://192.168.1.5:3000`) so the QR poi
 
 The app is a Node/Express server with a WebSocket — it runs on any host that supports Node. **Free tiers sleep after idle minutes** and give you an ephemeral disk, so on most free hosts notes are wiped on redeploy (see *Keep your box alive* below). The QR always points at your live URL, so it keeps working no matter what.
 
-### Koyeb (free, no credit card) — recommended
+### Render (free) — recommended
 1. Push this repo to GitHub (done for you — it's at `https://github.com/kurunami31/Lovebox`).
-2. Sign up at [koyeb.com](https://koyeb.com), then **Create Web Service → Deploy from GitHub**.
-3. Pick the repo, set: **Build**: `npm install` · **Run**: `npm start` · **Port**: `3000`. Leave the region/service default.
-4. Wait for the deploy, then open the `.koyeb.app` URL — the QR will already point there.
+2. Sign up at [render.com](https://render.com), then **New → Blueprint** — the included `render.yaml` sets everything up (build `npm install`, start `npm start`, port `3000`).
+3. Wait for the deploy, then open the `onrender.com` URL — the QR already points there.
 
-### Render (free)
-1. At [render.com](https://render.com): **New → Blueprint** (the included `render.yaml` sets everything up) or **New → Web Service**.
-2. Build: `npm install` · Start: `npm start`.
+### Fly.io (free allowance)
+1. Install the [flyctl](https://fly.io/docs/flyctl/) CLI and run `fly launch` in this folder (it detects a Node app; deploy with `fly deploy`).
+2. Free allowances cover a small app; needs a credit card on file for overage protection.
+
+### Run it yourself
+This is a plain Node/Express + WebSocket app — it also runs on any VPS, Raspberry Pi or home server behind the `PUBLIC_URL` env var.
 
 ### Keep your box alive
-- Free tiers sleep after ~15 (Render) or ~30 (Koyeb) idle minutes. Add a free [UptimeRobot](https://uptimerobot.com) monitor hitting `https://<your-url>/health` every 30 minutes so it stays awake.
-- On free hosts the `data/` folder is temporary — it resets on redeploy. Messages are safe until then; the seeded welcome note and the photo gallery always come back automatically.
+- Free tiers sleep after ~15 idle minutes. Add a free [UptimeRobot](https://uptimerobot.com) monitor hitting `https://<your-url>/health` every 30 minutes so it stays awake.
+- On free hosts the `data/` folder is temporary — it resets on redeploy. Messages are safe until then; the seeded letter, lilies note, date invitation and the photo gallery always come back automatically.
 
 ## Files
 
