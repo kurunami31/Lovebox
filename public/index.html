@@ -4,10 +4,10 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#fdeef0">
-<meta name="description" content="Noelle's Lovebox — a little box that collects notes, secrets, hearts and memories.">
+<meta name="description" content="Lovebox — a little box that collects notes, secrets, hearts and memories.">
 <link rel="manifest" href="/manifest.json">
 <link rel="icon" href="/icon.svg" type="image/svg+xml">
-<title>Noelle's Lovebox</title>
+<title>Lovebox</title>
 <link rel="stylesheet" href="/css/base.css">
 </head>
 <body>
@@ -20,7 +20,7 @@
     <p class="welcome__kicker">&#10084; a lovebox made for Baby</p>
     <h1 class="welcome__title">scan to send</h1>
     <p class="welcome__sub">Point another phone at this code and a note, a secret or a heart will find its way into the box.</p>
-    <canvas class="welcome__qr" id="welcome-qr"></canvas>
+    <img src="/qr-code.png" class="welcome__qr" alt="QR code to send notes">
     <div class="welcome__code">code <b id="welcome-code">&#8226;&#8226;&#8226;&#8226;&#8226;</b></div>
     <button class="btn btn--primary" id="welcome-open">open the box</button>
   </div>
@@ -29,7 +29,7 @@
 <div class="page">
   <header class="top">
     <div class="top__left">
-      <h1 class="box-name" id="box-name">Noelle's Lovebox</h1>
+      <h1 class="box-name" id="box-name">Lovebox</h1>
       <div class="code">code <b id="box-code">&#8226;&#8226;&#8226;&#8226;&#8226;</b></div>
     </div>
     <button class="btn btn--small" id="btn-share">&#10037; share</button>
@@ -91,7 +91,7 @@
 <div class="modal" id="sharebox" aria-hidden="true">
   <div class="modal__card">
     <button class="modal__close" id="share-close" aria-label="close">&#215;</button>
-    <h2 id="share-title">Noelle's Lovebox</h2>
+    <h2 id="share-title">Lovebox</h2>
     <p class="modal__sub">scan to send a note, a secret, or a heart</p>
     <canvas class="modal__qr" id="share-qr"></canvas>
     <div class="code">code <b id="share-code"></b></div>
