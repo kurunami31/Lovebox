@@ -120,6 +120,7 @@
         else if (msg.type === 'heartspin') onHeartspin(msg);
         else if (msg.type === 'presence') onPresence(msg.senders);
         else if (msg.type === 'box:update') onRemoteUpdate(msg.settings);
+        else if (msg.type === 'box:reload') reload();
         else if (msg.type === 'note:read') onNoteRead(msg.id);
       },
       onClose: () => els.status.textContent = 'reaching for the box\u2026',
@@ -619,6 +620,17 @@
 
   /* ---------------- wire UI ---------------- */
 
+    async function reload() {
+    if (!(await loadBox(boxCode))) return;
+    Theme.apply(boxData.settings);
+    Heart.setPalette(boxData.settings.heartPalette);
+    Box.setSettings(boxData.settings);
+    Sound.setEnabled(boxData.settings.soundOn !== false);
+    applyBox();
+    renderAll();
+    toast('the box is whole again');
+  }
+
   $('btn-share').addEventListener('click', openShare);
   $('btn-tune').addEventListener('click', () => Settings.open(boxData.settings, (patch, all) => {
     boxData.settings = all;
@@ -632,7 +644,7 @@
     }).catch(() => {});
     applyBox();
     refreshGarden();
-  }));
+  }, reload));
   $('tune-close').addEventListener('click', () => Settings.close());
   $('scrim').addEventListener('click', () => { closeSheet(); Settings.close(); Share.close(); });
   $('share-close').addEventListener('click', () => Share.close());

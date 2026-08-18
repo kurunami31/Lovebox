@@ -269,6 +269,44 @@ app.get('/api/box/:code/drawer', (req, res) => {
   res.json({ notes: box.drawer });
 });
 
+app.get('/api/box/:code/export', (req, res) => {
+  const code = String(req.params.code || '').toUpperCase();
+  const box = store.boxes[code];
+  if (!box) return res.status(404).json({ error: 'no_such_box' });
+  res.json({
+    app: 'keepsake-box',
+    version: 1,
+    exportedAt: Date.now(),
+    code,
+    box: { ...box, settings: boxSettings(code) },
+  });
+});
+
+app.post('/api/box/:code/import', (req, res) => {
+  const code = String(req.params.code || '').toUpperCase();
+  if (!store.boxes[code]) return res.status(404).json({ error: 'no_such_box' });
+  const b = (req.body && req.body.box) || null;
+  if (!b || !Array.isArray(b.notes)) return res.status(400).json({ error: 'bad_backup' });
+  store.boxes[code] = {
+    code,
+    name: String(b.name || '').slice(0, 60),
+    createdAt: b.createdAt || Date.now(),
+    settings: b.settings && typeof b.settings === 'object' ? b.settings : {},
+    notes: Array.isArray(b.notes) ? b.notes.slice(0, 200) : [],
+    trinkets: Array.isArray(b.trinkets) ? b.trinkets.slice(0, 80) : [],
+    drawer: Array.isArray(b.drawer) ? b.drawer.slice(0, 50) : [],
+    garden: b.garden && typeof b.garden === 'object' ? b.garden : { score: 0, extra: 0 },
+    diary: Array.isArray(b.diary) ? b.diary.slice(0, 60) : [],
+    spins: b.spins || 0,
+    firstOpenedAt: b.firstOpenedAt || null,
+    reads: b.reads || 0,
+    senderNames: b.senderNames && typeof b.senderNames === 'object' ? b.senderNames : {},
+  };
+  persist();
+  broadcastTo(code, { type: 'box:reload' });
+  res.json({ ok: true });
+});
+
 app.patch('/api/box/:code', (req, res) => {
   const code = String(req.params.code || '').toUpperCase();
   const box = store.boxes[code];

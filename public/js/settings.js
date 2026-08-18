@@ -6,6 +6,7 @@ const Settings = (() => {
   const sheet = () => document.getElementById('tune-sheet');
   let settings = {};
   let onPatch = null;   /* (patch, full) => void */
+  let onReload = null;  /* () => void */
   let patchTimer = null;
 
   const WOODS = [
@@ -87,6 +88,15 @@ const Settings = (() => {
       <div class="cap" id="t-knock-hint">Tap this button in your own rhythm. A secret drawer listens for it.</div>
     `));
 
+    body.appendChild(group('the box&rsquo;s memory', `
+      <div class="tune-row">
+        <button class="btn btn--small" id="t-backup">save a copy</button>
+        <button class="btn btn--small" id="t-restore">restore a copy</button>
+        <input type="file" id="t-restore-file" accept="application/json,.json" class="hidden">
+      </div>
+      <div class="cap">On free hosting, redeploys forget everything. Save a copy before you redeploy, and restore it after.</div>
+    `));
+
     /* wire everything */
     wireWoods();
     wireHearts();
@@ -95,6 +105,7 @@ const Settings = (() => {
     wireStyles();
     wireKnock();
     wireFields();
+    wireMemory(onReload);
   }
 
   function group(label, inner) {
@@ -281,6 +292,53 @@ const Settings = (() => {
     });
   }
 
+  /* ---------------- memory backup ---------------- */
+
+  function wireMemory(onReload) {
+    const saveBtn = document.getElementById('t-backup');
+    const restoreBtn = document.getElementById('t-restore');
+    const fileInput = document.getElementById('t-restore-file');
+
+    saveBtn.addEventListener('click', async () => {
+      const code = new URLSearchParams(location.search).get('box') || localStorage.getItem('keepsake.code');
+      try {
+        const res = await fetch(`/api/box/${code}/export`);
+        if (!res.ok) throw 0;
+        const data = await res.json();
+        const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = `keepsake-${code}.json`;
+        a.click();
+        setTimeout(() => URL.revokeObjectURL(a.href), 4000);
+        Sound.tap();
+      } catch {
+        Sound.fail();
+      }
+    });
+
+    restoreBtn.addEventListener('click', () => fileInput.click());
+    fileInput.addEventListener('change', async () => {
+      const file = fileInput.files && fileInput.files[0];
+      if (!file) return;
+      const code = new URLSearchParams(location.search).get('box') || localStorage.getItem('keepsake.code');
+      try {
+        const backup = JSON.parse(await file.text());
+        const res = await fetch(`/api/box/${code}/import`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ box: backup.box }),
+        });
+        if (!res.ok) throw 0;
+        Sound.unlock();
+        onReload && onReload();
+      } catch {
+        Sound.fail();
+      }
+      fileInput.value = '';
+    });
+  }
+
   /* ---------------- plumbing ---------------- */
 
   function patch(p) {
@@ -294,9 +352,10 @@ const Settings = (() => {
     patchTimer = setTimeout(() => patch(p), 500);
   }
 
-  function open(current, cb) {
+  function open(current, cb, reloadCb) {
     settings = { ...current };
     onPatch = cb;
+    onReload = reloadCb;
     build();
     sheet().classList.add('is-open');
     document.getElementById('scrim').classList.add('is-on');

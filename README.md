@@ -48,9 +48,11 @@ The box is designed to run on any Node host. It binds `process.env.PORT` and exp
 
 ### Option B — Render (also free; requires a card to verify identity)
 
-1. Push to GitHub → [render.com](https://render.com) → **New → Web Service** → connect repo.
-2. Build: `npm install` · Start: `npm start`.
+1. Push to GitHub → [render.com](https://render.com) → **New → Blueprint** and select this repo (`render.yaml` is included), or **New → Web Service** → connect the repo.
+2. Build: `npm install` · Start: `npm start`. Render sets `PORT` automatically; the `/health` endpoint doubles as the health check.
 3. Free tier spins down after 15 idle minutes, so add the same UptimeRobot ping to `/health`. The free allowance (~750 instance-hours/mo) covers continuous uptime.
+
+> **Free-tier warning — back up before redeploys.** Render free instances have an *ephemeral* filesystem: `data/boxes.json` is wiped every time the service restarts or redeploys, so all notes/trinkets/secrets would disappear. Use **Tune the box → the box's memory → save a copy** before redeploying, then **restore a copy** afterwards. (Paid Render services can attach a persistent disk if you ever outgrow this.)
 
 ### Upgrading later
 
