@@ -437,8 +437,6 @@
 
   function showWelcome() {
     const w = $('welcome');
-    const url = Share.senderUrl(boxCode);
-    Share.makeQR($('welcome-qr'), url);
     w.classList.remove('hidden');
     $('welcome-open').addEventListener('click', () => {
       w.classList.add('is-gone');
