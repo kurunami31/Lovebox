@@ -3,22 +3,24 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#f7f1e8">
-<meta name="description" content="A little box that collects notes, secrets and hearts from the people you love.">
+<meta name="theme-color" content="#fdeef0">
+<meta name="description" content="Noelle's Lovebox — a little box that collects notes, secrets, hearts and memories.">
 <link rel="manifest" href="/manifest.json">
 <link rel="icon" href="/icon.svg" type="image/svg+xml">
-<title>The Keepsake Box</title>
+<title>Noelle's Lovebox</title>
 <link rel="stylesheet" href="/css/base.css">
 </head>
 <body>
 
-<!-- first thing: the QR to share this box (shown only once the box is loaded) -->
+<!-- first thing: the QR to share this box -->
 <div class="welcome hidden" id="welcome">
   <div class="welcome__card">
+    <img class="welcome__lily" src="/lily.svg" alt="lily">
+    <p class="welcome__kicker">&#10084; a lovebox made for Noelle</p>
     <h1 class="welcome__title">scan to send</h1>
-    <p class="welcome__sub">Point another phone at this code and a note will find its way into the box.</p>
+    <p class="welcome__sub">Point another phone at this code and a note, a secret or a heart will find its way into the box.</p>
     <canvas class="welcome__qr" id="welcome-qr"></canvas>
-    <div class="welcome__code">code <b id="welcome-code">•••••</b></div>
+    <div class="welcome__code">code <b id="welcome-code">&#8226;&#8226;&#8226;&#8226;&#8226;</b></div>
     <button class="btn btn--primary" id="welcome-open">open the box</button>
   </div>
 </div>
@@ -26,8 +28,8 @@
 <div class="page">
   <header class="top">
     <div class="top__left">
-      <h1 class="box-name" id="box-name">The Keepsake Box</h1>
-      <div class="code">code <b id="box-code">•••••</b></div>
+      <h1 class="box-name" id="box-name">Noelle's Lovebox</h1>
+      <div class="code">code <b id="box-code">&#8226;&#8226;&#8226;&#8226;&#8226;</b></div>
     </div>
     <button class="btn btn--small" id="btn-share">&#10037; share</button>
   </header>
@@ -57,6 +59,26 @@
       <p>share the box and the first note will find its way here.</p>
       <button class="btn btn--primary" id="btn-empty-share">share the box</button>
     </div>
+
+    <section class="invite" id="invite">
+      <div class="invite__card" id="invite-ask">
+        <img class="invite__lily" src="/lily.svg" alt="lily">
+        <h2 class="invite__title">an invitation</h2>
+        <p class="invite__ask">Noelle, will you go out with me?</p>
+        <p class="invite__hint">no details yet &#8212; just an answer.</p>
+        <button class="btn btn--primary" id="invite-yes">yes &#8212; it&#8217;s a date</button>
+      </div>
+      <div class="invite__card invite__done hidden" id="invite-done">
+        <img class="invite__lily" src="/lily.svg" alt="lily">
+        <h2 class="invite__title">she said yes</h2>
+        <p class="invite__done-txt">it&#8217;s a date. &#10084;</p>
+      </div>
+    </section>
+
+    <section class="memories">
+      <h2 class="memories__title"><img class="memories__lily" src="/lily.svg" alt="lily"> memories <span id="mem-count"></span></h2>
+      <div class="memories__grid" id="mem-grid"></div>
+    </section>
   </main>
 </div>
 
@@ -66,12 +88,20 @@
 <div class="modal" id="sharebox" aria-hidden="true">
   <div class="modal__card">
     <button class="modal__close" id="share-close" aria-label="close">&#215;</button>
-    <h2 id="share-title">The Keepsake Box</h2>
+    <h2 id="share-title">Noelle's Lovebox</h2>
     <p class="modal__sub">scan to send a note, a secret, or a heart</p>
     <canvas class="modal__qr" id="share-qr"></canvas>
     <div class="code">code <b id="share-code"></b></div>
     <button class="btn" id="share-copy">copy link</button>
   </div>
+</div>
+
+<!-- photo lightbox -->
+<div class="lightbox" id="lightbox" aria-hidden="true">
+  <button class="lightbox__close" id="lb-close" aria-label="close">&#215;</button>
+  <button class="lightbox__nav lightbox__nav--prev" id="lb-prev" aria-label="previous">&#8249;</button>
+  <img class="lightbox__img" id="lb-img" alt="">
+  <button class="lightbox__nav lightbox__nav--next" id="lb-next" aria-label="next">&#8250;</button>
 </div>
 
 <div class="toast" id="toast"></div>
@@ -82,7 +112,7 @@
     <h2>an empty box</h2>
     <p class="onboard__sub">Give it a name and leave the first note inside. The box makes a code for you to share.</p>
     <input class="text" id="ob-name" maxlength="60" placeholder="name for this box (optional)" autocomplete="off">
-    <textarea class="text msg" id="ob-greeting" maxlength="900" placeholder="the first note they find inside (optional)"></textarea>
+    <textarea class="text msg" id="ob-greeting" maxlength="4000" placeholder="the first note they find inside (optional)"></textarea>
     <button class="btn btn--primary" id="ob-go">make the box</button>
     <div class="onboard__alt">already have a code? <button class="link" id="ob-have">enter it</button></div>
     <div class="hidden" id="ob-enter">

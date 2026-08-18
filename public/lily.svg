@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 140">
+  <defs>
+    <linearGradient id="petal" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="100%" stop-color="#f7d3de"/>
+    </linearGradient>
+  </defs>
+  <!-- stem -->
+  <path d="M60 138 C60 110 60 92 60 74" fill="none" stroke="#8fae7d" stroke-width="4" stroke-linecap="round"/>
+  <path d="M60 102 C46 98 39 88 41 78" fill="none" stroke="#8fae7d" stroke-width="3" stroke-linecap="round"/>
+  <path d="M60 102 C74 98 81 88 79 78" fill="none" stroke="#8fae7d" stroke-width="3" stroke-linecap="round"/>
+  <!-- leaves -->
+  <path d="M41 78 C35 71 37 62 44 59 C47 66 47 74 41 78 Z" fill="#a9c48d"/>
+  <path d="M79 78 C85 71 83 62 76 59 C73 66 73 74 79 78 Z" fill="#a9c48d"/>
+  <!-- back petals -->
+  <g fill="#f2cfdb">
+    <path d="M60 70 C36 62 30 42 44 32 C52 41 58 54 60 70 Z"/>
+    <path d="M60 70 C84 62 90 42 76 32 C68 41 62 54 60 70 Z"/>
+    <path d="M60 70 C58 52 62 36 72 31 C72 45 70 58 60 70 Z" transform="rotate(-6 60 70)"/>
+    <path d="M60 70 C50 52 44 38 34 36 C41 48 51 60 60 70 Z" transform="rotate(6 60 70)"/>
+  </g>
+  <!-- front petals -->
+  <g fill="url(#petal)">
+    <path d="M60 70 C50 46 58 23 76 18 C75 36 69 56 60 70 Z"/>
+    <path d="M60 70 C70 46 62 23 44 18 C45 36 51 56 60 70 Z"/>
+    <path d="M60 70 C60 43 64 21 70 17 C68 38 66 56 60 70 Z"/>
+  </g>
+  <!-- lily throat -->
+  <circle cx="60" cy="64" r="7" fill="#eec355"/>
+  <circle cx="57" cy="61" r="1.7" fill="#7c5314"/>
+  <circle cx="63" cy="61" r="1.7" fill="#7c5314"/>
+  <circle cx="60" cy="67" r="1.7" fill="#7c5314"/>
+</svg>

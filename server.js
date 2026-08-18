@@ -16,6 +16,8 @@ const wss = new WebSocketServer({ server, path: '/ws' });
 const PORT = process.env.PORT || 3000;
 const DATA_DIR = path.join(__dirname, 'data');
 const FILE = path.join(DATA_DIR, 'boxes.json');
+const PHOTOS_DIR = path.join(__dirname, 'public', 'photos');
+const DEFAULT_CODE = 'NOELL';
 
 let store = { boxes: {} };
 
@@ -29,6 +31,76 @@ function load() {
   } catch {}
 }
 load();
+
+function seedDefault() {
+  const LETTER = `Hi baby, happy 4 years and 6 months nato po. 🥹❤️ Grabe no, 4 years and 6 months na diay ta. Murag dugay nagud diay ta together, layo na pero layo pa diba. And after everything we've been through, I'm still so thankful nga ikaw akong kauban.
+
+Thank you kaayo sa pag-keep up sa akong kabadlongon ug sa akong pagka-gahi ug ulo. 😭😂 Kabalo ko nga usahay lisod ko sabton, usahay samokan kaayo ko, ug naa gyud koy mga moments nga kabalo ko samok kaayo ko, kanang murag gusto na nimo ko kumoton tungod sa akong kabadlongon HAHAHA 😭😂. Pero despite all of that, naa gihapon ka. Thank you kay patient ka sa akoa and for choosing to understand me even during the times nga lisod ko sabton. Thank you pud kaayo for always making me feel beautiful, especially sa mga times nga feeling nako pangit kaayo ko. Thank you for reminding me nga beautiful ko even when I can't see it myself. Thank you sa pag-boost sa akong confidence sa mga panahon nga ako mismo dili kabalo unsaon pag-believe sa akong sarili. Sometimes, I forget my worth, I doubt myself, and I become too hard on myself, pero somehow, you always find a way to remind me that I am enough. Thank you for always making me feel loved and appreciated, labi na gyud sa mga times nga makalimot ko unsaon pag-love ug appreciate sa akong sarili. You have this way of making me feel safe and loved without even realizing how much it means to me. And I hope you know nga tanan nimong little efforts, even the smallest ones, na-appreciate gyud nako. Bisan dili nako pirmi maingon or ma-express, please know nga I notice them and I keep them close to my heart.
+
+Spending this day with you feels extra special. Special man gyud ang every day nga naa ka sa akong life, pero mas special lang gyud ron kay monthsary nato hehe. 🥹❤️ Another month, another memory, another reminder kung unsa ta kalayo na ang naagian together. I know nga dili perfect atong relationship, and I know pud nga lisod atong situation karon. Daghan pa siguro tag challenges nga atubangon, ug naa gyud mga panahon nga mahimong kapoy ug lisod ang tanan. Pero despite everything, naa koy salig sa atong duha. I believe in us, and I believe nga kaya nato ni i-face as long as magpabilin tang mag uban, mag-sinabtanay, ug dili ta ma stop choosing each other. Thank you for staying. Thank you for loving me the way you do. Thank you for being patient with me, for making me smile, for comforting me, and for being one of the best parts of my life. I may not always say it perfectly, and sometimes kulang ra gyud akong words para ma-explain unsa ko ka-thankful nga naa ka, pero I hope you always know how much you mean to me.
+
+Happy 4 years and 6 months, baby. ❤️ I love you so much, palangga. And no matter how difficult things get, I hope we continue choosing each other, just like how we did from the very beginning. Here's to more months, more years, more memories, more kulit, more away nga ma-solve ra gihapon 😂, and more moments together.
+
+I love you so much, palangga. Thank you for being you, and thank you for staying with me through everything. Happy 4 years and 6 months to us. ❤️🥹`;
+
+  const LILY = `fun fact: lilies were considered one of the most beautiful and sacred flowers in ancient Egypt. And just like a lily, you are sacred and beautiful to me. Among all the people I have seen and known, you are the most beautiful person in my eyes — not just because of how you look, but because of who you are and the way you make my world feel so special. 🤍🌸`;
+
+  if (!store.boxes[DEFAULT_CODE]) {
+    store.boxes[DEFAULT_CODE] = {
+      code: DEFAULT_CODE,
+      name: "Noelle's Lovebox",
+      createdAt: Date.now(),
+      notes: [
+        {
+          id: 'greeting',
+          ts: Date.now(),
+          sender: 'your palangga',
+          content: LETTER,
+          sealed: false,
+          read: false,
+        },
+        {
+          id: 'lilies',
+          ts: Date.now() + 1,
+          sender: 'your palangga',
+          content: LILY,
+          sealed: false,
+          read: false,
+        },
+      ],
+      reads: 0,
+      spins: 0,
+      cover: '/photos/noelle-01.jpg',
+      invite: { asked: true, confirmed: false, by: '', at: null },
+    };
+    persist();
+    return;
+  }
+
+  const b = store.boxes[DEFAULT_CODE];
+  const greeting = (b.notes || []).find((n) => n.id === 'greeting');
+  if (greeting && !/monthsary/.test(greeting.content)) {
+    greeting.content = LETTER;
+    persist();
+  }
+  if (!(b.notes || []).some((n) => n.id === 'lilies')) {
+    b.notes.unshift({
+      id: 'lilies',
+      ts: Date.now(),
+      sender: 'your palangga',
+      content: LILY,
+      sealed: false,
+      read: false,
+    });
+    b.notes = b.notes.slice(-200);
+    persist();
+  }
+  if (!b.invite) {
+    b.invite = { asked: true, confirmed: false, by: '', at: null };
+    persist();
+  }
+}
+seedDefault();
 
 app.use(express.json({ limit: '16mb' }));
 app.use(express.static(path.join(__dirname, 'public')));
@@ -45,6 +117,7 @@ function newCode() {
 
 function cleanImg(v) {
   if (typeof v !== 'string') return '';
+  if (/^\/photos\/[^/]+\.(jpe?g|png|gif|webp)$/i.test(v)) return v;
   if (!/^data:image\/(jpeg|png|gif|webp);base64,/.test(v)) return '';
   if (v.length > 3000000) return '';
   return v;
@@ -55,7 +128,7 @@ function cleanNote(n) {
     id: String(n.id || '').slice(0, 40),
     ts: n.ts || Date.now(),
     sender: String(n.sender || '').slice(0, 30) || 'Someone',
-    content: String(n.content || '').slice(0, 900),
+    content: String(n.content || '').slice(0, 4000),
     img: cleanImg(n.img),
     sealed: !!n.sealed,
     read: !!n.read,
@@ -72,10 +145,25 @@ function boxView(code) {
     notes: (b.notes || []).map(cleanNote),
     reads: b.reads || 0,
     spins: b.spins || 0,
+    invite: b.invite || null,
   };
 }
 
 app.get('/health', (req, res) => res.json({ ok: true, boxes: Object.keys(store.boxes).length }));
+
+app.get('/api/default', (req, res) => {
+  res.json({ code: store.boxes[DEFAULT_CODE] ? DEFAULT_CODE : null });
+});
+
+app.get('/api/photos', (req, res) => {
+  let files = [];
+  try {
+    files = fs.readdirSync(PHOTOS_DIR)
+      .filter((f) => /\.(jpe?g|png|gif|webp)$/i.test(f))
+      .sort();
+  } catch {}
+  res.json({ photos: files });
+});
 
 app.get('/api/config', (req, res) => {
   res.json({ publicUrl: process.env.PUBLIC_URL || '' });
@@ -83,7 +171,7 @@ app.get('/api/config', (req, res) => {
 
 app.post('/api/box', (req, res) => {
   const name = String((req.body || {}).name || '').trim().slice(0, 60);
-  const greeting = String((req.body || {}).greeting || '').trim().slice(0, 900);
+  const greeting = String((req.body || {}).greeting || '').trim().slice(0, 4000);
   const code = newCode();
   const notes = [];
   if (greeting) {
@@ -123,6 +211,19 @@ app.patch('/api/box/:code', (req, res) => {
     b.cover = cleanImg(body.cover);
     persist();
     broadcast(code, { type: 'cover', cover: b.cover });
+  }
+  if (body.invite && typeof body.invite === 'object') {
+    const inv = b.invite || { asked: false, confirmed: false, by: '' };
+    if (typeof body.invite.asked === 'boolean') inv.asked = body.invite.asked;
+    if (typeof body.invite.confirmed === 'boolean') {
+      inv.confirmed = body.invite.confirmed;
+      if (inv.confirmed) inv.at = Date.now();
+      else inv.at = null;
+    }
+    if (typeof body.invite.by === 'string') inv.by = String(body.invite.by).slice(0, 30);
+    b.invite = inv;
+    persist();
+    broadcast(code, { type: 'invite', invite: b.invite });
   }
   res.json({ ok: true });
 });
@@ -174,7 +275,7 @@ wss.on('connection', (ws, req) => {
 
     switch (m.type) {
       case 'note': {
-        const content = String(m.content || '').trim().slice(0, 900);
+        const content = String(m.content || '').trim().slice(0, 4000);
         const img = cleanImg(m.img);
         if (!content && !img) return;
         const sender = String(m.sender || '').trim().slice(0, 30) || 'Someone';

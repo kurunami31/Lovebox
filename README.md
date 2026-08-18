@@ -1,18 +1,25 @@
-# The Keepsake Box
+# Noelle's Lovebox
 
-A small, simple web app: a flat card with a little pixel heart that collects **notes, sealed secrets and hearts** from the people you love.
+A small, romantic web app made for Noelle: a lovebox that collects **notes, sealed secrets, hearts and memories** from the people who love her.
+
+The box opens with an **anniversary letter** — a 4 years & 6 months love note from the one who made it — followed by a note about **lilies**, the sacred flower of ancient Egypt, because to that someone Noelle is sacred and beautiful too. `🤍🌸`
 
 Open the box page and the **first thing you see is a QR code** — scan it with another phone and it takes you straight to the send page. Anyone with the code can send.
 
 ## Features
 
-- **QR-first welcome** — the box's share code is the landing screen
-- **Notes** — arrive live, in a handwritten font
-- **Pictures** — senders can attach a photo (gallery or camera) to a note; it shows in the box. The box owner can also upload their own cover picture at the top of the box page (change or remove it anytime)
+- **QR-first welcome** — the box's share code is the very first screen
+- **The anniversary letter** — the first note in the box, the full 4 years & 6 months message, delivered live with a handwritten font
+- **The lilies note** — an ancient-Egypt lily fact and a declaration that Noelle is the most beautiful person of all, styled with a lily
+- **A date invitation** — an invitation card on the box page: *"Noelle, will you go out with me?"* — no details, just one button. When she taps **yes**, the heart bursts and it's sealed forever
+- **Lily motif** — a soft lily blooms in the welcome screen, in the memories header and on the lilies note
+- **Memories gallery** — Noelle's photos sit in a polaroid grid; tap one to open a full-screen lightbox
+- **Notes** — arrive live, in a handwritten font, with optional photo attachments
 - **Sealed secrets** — a sender ticks "seal it"; to read it, tap the wax and the heart spins to break the seal
 - **The heart** — spins when a note arrives or when a sender sends a heart; each message grows the box
+- **Default box** — the server seeds box `NOELL` on first boot, so the QR is always the first thing that comes out
 - **Sender page** (`/send.html?box=CODE`) — note, photo, sealed secret, or a heart; shows if the box owner is online
-- One box per code, no accounts. Codes are 5 characters.
+- One box per code, no accounts. Codes are 5 characters. Notes can be up to 4000 characters.
 
 ## Run it
 
@@ -21,30 +28,34 @@ npm install
 npm start
 ```
 
-Open `http://localhost:3000`, make the box, and scan the QR from a phone on the same Wi-Fi.
+Open `http://localhost:3000` — the QR appears first. Scan it from a phone on the same Wi-Fi to test sending.
 
-## Deploy
+For LAN testing, set `PUBLIC_URL` (e.g. `http://192.168.1.5:3000`) so the QR points at your machine instead of localhost.
 
-Free hosting with an ephemeral disk **forgets the box on redeploy** — back up by just copying the code/link, or note that the QR always points at the live URL.
+## Deploy for free
 
-### Koyeb (free, no card)
-1. Push to GitHub, then at koyeb.com: **Create Service → Web Service → Deploy from GitHub**.
-2. Build: `npm install` · Run: `npm start` · Port: `3000`.
+The app is a Node/Express server with a WebSocket — it runs on any host that supports Node. **Free tiers sleep after idle minutes** and give you an ephemeral disk, so on most free hosts notes are wiped on redeploy (see *Keep your box alive* below). The QR always points at your live URL, so it keeps working no matter what.
+
+### Koyeb (free, no credit card) — recommended
+1. Push this repo to GitHub (done for you — it's at `https://github.com/kurunami31/Lovebox`).
+2. Sign up at [koyeb.com](https://koyeb.com), then **Create Web Service → Deploy from GitHub**.
+3. Pick the repo, set: **Build**: `npm install` · **Run**: `npm start` · **Port**: `3000`. Leave the region/service default.
+4. Wait for the deploy, then open the `.koyeb.app` URL — the QR will already point there.
 
 ### Render (free)
-1. Push to GitHub, then at render.com: **New → Blueprint** (the included `render.yaml` sets it all up) or **New → Web Service**.
+1. At [render.com](https://render.com): **New → Blueprint** (the included `render.yaml` sets everything up) or **New → Web Service**.
 2. Build: `npm install` · Start: `npm start`.
 
-### Keep it awake
-Free tiers sleep after idle minutes. Add a free [UptimeRobot](https://uptimerobot.com) monitor hitting `https://<your-url>/health` every 30 minutes.
-
-### Custom URL (LAN testing)
-Set `PUBLIC_URL` (e.g. `http://192.168.1.5:3000`) and the QR will point there instead of localhost.
+### Keep your box alive
+- Free tiers sleep after ~15 (Render) or ~30 (Koyeb) idle minutes. Add a free [UptimeRobot](https://uptimerobot.com) monitor hitting `https://<your-url>/health` every 30 minutes so it stays awake.
+- On free hosts the `data/` folder is temporary — it resets on redeploy. Messages are safe until then; the seeded welcome note and the photo gallery always come back automatically.
 
 ## Files
 
-- `server.js` — express + WebSocket, JSON store in `data/boxes.json`
-- `public/index.html` + `public/js/app.js` — the box page
+- `server.js` — express + WebSocket, JSON store in `data/boxes.json`, seeds the `NOELL` box, serves `/api/photos`
+- `public/index.html` + `public/js/app.js` — the box page (QR welcome, notes, gallery, lightbox)
 - `public/send.html` + `public/js/sender.js` — the sender page
-- `public/css/base.css` — everything, flat and warm
+- `public/photos/` — the memories gallery (22 photos)
+- `public/css/base.css` — everything, soft and warm
 - `public/js/heart.js` — the pixel heart · `share.js` — QR · `sound.js` — WebAudio
+- `public/lily.svg` — the lily motif

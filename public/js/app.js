@@ -48,7 +48,7 @@
 
   /* ---------------- state & rendering ---------------- */
 
-  const state = { notes: [], name: 'The Keepsake Box', code: '', cover: '', senders: 0 };
+  const state = { notes: [], name: 'The Keepsake Box', code: '', cover: '', senders: 0, invite: null };
 
   function status(text) {
     $('status').textContent = text;
@@ -122,6 +122,7 @@
       const card = document.createElement('div');
       card.className = 'note' + (n.read ? '' : ' is-unread');
       if (n.sealed && !n.read) card.classList.add('is-sealed');
+      if (n.id === 'lilies') card.classList.add('note--lilies');
 
       const head = document.createElement('div');
       head.className = 'note__head';
@@ -132,6 +133,13 @@
       time.className = 'note__time';
       time.textContent = timeStr(n.ts);
       head.append(sender, time);
+      if (n.id === 'lilies') {
+        const badge = document.createElement('img');
+        badge.className = 'note__lily';
+        badge.src = '/lily.svg';
+        badge.alt = '';
+        head.prepend(badge);
+      }
 
       const body = document.createElement('div');
       body.className = 'note__body';
@@ -261,6 +269,78 @@
     toast._t = setTimeout(() => t.classList.remove('is-on'), 2400);
   }
 
+  /* ---------------- date invitation ---------------- */
+
+  function renderInvite() {
+    const inv = state.invite;
+    const sec = $('invite');
+    if (!inv || !inv.asked) {
+      sec.classList.add('hidden');
+      return;
+    }
+    sec.classList.remove('hidden');
+    $('invite-ask').classList.toggle('hidden', !!inv.confirmed);
+    $('invite-done').classList.toggle('hidden', !inv.confirmed);
+  }
+
+  async function confirmInvite() {
+    if (state.invite && state.invite.confirmed) return;
+    state.invite = { ...(state.invite || {}), confirmed: true, at: Date.now() };
+    renderInvite();
+    Sound.heart();
+    burstHearts();
+    status('she said yes \u2014 it\u2019s a date!');
+    await fetch(`/api/box/${boxCode}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ invite: { confirmed: true } }),
+    }).catch(() => {});
+    setTimeout(() => moodStatus(), 2600);
+  }
+
+  /* ---------------- memories gallery ---------------- */
+
+  let memPhotos = [];
+
+  async function renderMemories() {
+    let photos;
+    try {
+      const res = await fetch('/api/photos');
+      photos = (await res.json()).photos || [];
+    } catch { return; }
+    memPhotos = photos;
+    $('mem-count').textContent = photos.length ? `\u00b7 ${photos.length}` : '';
+    const grid = $('mem-grid');
+    grid.innerHTML = '';
+    photos.forEach((file) => {
+      const card = document.createElement('div');
+      card.className = 'memory';
+      const img = document.createElement('img');
+      img.src = `/photos/${file}`;
+      img.alt = '';
+      img.loading = 'lazy';
+      card.appendChild(img);
+      card.addEventListener('click', () => openLightbox(photos.indexOf(file)));
+      grid.appendChild(card);
+    });
+  }
+
+  function openLightbox(i) {
+    lbIndex = i;
+    $('lb-img').src = `/photos/${memPhotos[i]}`;
+    $('lightbox').classList.add('is-on');
+  }
+
+  let lbIndex = 0;
+  function closeLightbox() {
+    $('lightbox').classList.remove('is-on');
+  }
+  function stepLightbox(d) {
+    if (!memPhotos.length) return;
+    lbIndex = (lbIndex + d + memPhotos.length) % memPhotos.length;
+    $('lb-img').src = `/photos/${memPhotos[lbIndex]}`;
+  }
+
   /* ---------------- welcome (QR first) ---------------- */
 
   function showWelcome() {
@@ -293,6 +373,7 @@
       state.name = b.name || 'The Keepsake Box';
       state.cover = b.cover || '';
       state.notes = b.notes || [];
+      state.invite = b.invite || null;
       boxCode = b.code;
       localStorage.setItem('keepsake.code', b.code);
       return true;
@@ -303,6 +384,8 @@
     renderHead();
     renderCover();
     renderNotes();
+    renderInvite();
+    renderMemories();
     moodStatus();
 
     ws = connect(boxCode, (m) => {
@@ -327,6 +410,17 @@
       } else if (m.type === 'presence') {
         state.senders = m.senders || 0;
         moodStatus();
+      } else if (m.type === 'invite') {
+        if (m.invite) {
+          state.invite = m.invite;
+          renderInvite();
+          if (m.invite.confirmed) {
+            Sound.heart();
+            burstHearts();
+            status('she said yes \u2014 it\u2019s a date!');
+            setTimeout(() => moodStatus(), 2600);
+          }
+        }
       } else if (m.type === 'note:read') {
         const n = state.notes.find((x) => x.id === m.id);
         if (n) { n.read = true; renderNotes(); }
@@ -339,6 +433,21 @@
     $('btn-empty-share').addEventListener('click', openShare);
     $('share-close').addEventListener('click', () => Share.close());
     $('scrim').addEventListener('click', () => Share.close());
+
+    $('lb-close').addEventListener('click', closeLightbox);
+    $('lightbox').addEventListener('click', (e) => {
+      if (e.target === $('lightbox')) closeLightbox();
+    });
+    $('lb-prev').addEventListener('click', (e) => { e.stopPropagation(); stepLightbox(-1); });
+    $('lb-next').addEventListener('click', (e) => { e.stopPropagation(); stepLightbox(1); });
+    document.addEventListener('keydown', (e) => {
+      if (!$('lightbox').classList.contains('is-on')) return;
+      if (e.key === 'Escape') closeLightbox();
+      if (e.key === 'ArrowLeft') stepLightbox(-1);
+      if (e.key === 'ArrowRight') stepLightbox(1);
+    });
+
+    $('invite-yes').addEventListener('click', confirmInvite);
     $('share-copy').addEventListener('click', async () => {
       try {
         await navigator.clipboard.writeText(Share.senderUrl(boxCode));
@@ -432,7 +541,15 @@
   async function boot() {
     const codeFromUrl = new URLSearchParams(location.search).get('box');
     const stored = localStorage.getItem('keepsake.code');
-    const candidate = codeFromUrl ? codeFromUrl.toUpperCase() : stored;
+    let candidate = codeFromUrl ? codeFromUrl.toUpperCase() : stored;
+
+    if (!candidate) {
+      try {
+        const res = await fetch('/api/default');
+        const d = await res.json();
+        candidate = d.code;
+      } catch {}
+    }
 
     if (candidate) {
       const ok = await loadBox(candidate);
