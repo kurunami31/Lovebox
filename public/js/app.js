@@ -357,6 +357,7 @@
         startOnboarding();
         return;
       }
+      localStorage.removeItem('keepsake.code');
     }
     startOnboarding();
   }
