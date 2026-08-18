@@ -1,6 +1,11 @@
 const QRCode = require('qrcode');
 const fs = require('fs');
-const url = '/send.html?box=NOELL';
+
+// Use PUBLIC_URL env var if set, otherwise fall back to localhost
+const PUBLIC_URL = process.env.PUBLIC_URL || 'http://localhost:3000';
+const url = `${PUBLIC_URL}/send.html?box=NOELL`;
+
+console.log('Generating QR code for:', url);
 
 QRCode.toString(url, { 
   type: 'svg', 

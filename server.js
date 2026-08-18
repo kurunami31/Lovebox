@@ -105,6 +105,51 @@ seedDefault();
 app.use(express.json({ limit: '16mb' }));
 app.use(express.static(path.join(__dirname, 'public')));
 
+// Root route - serve index.html
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
+
+// Regenerate QR code with correct PUBLIC_URL on startup
+function regenerateQR() {
+  const PUBLIC_URL = process.env.PUBLIC_URL || '';
+  if (!PUBLIC_URL) {
+    console.log('No PUBLIC_URL set, skipping QR regeneration');
+    return;
+  }
+  
+  const QRCode = require('qrcode');
+  const qrUrl = `${PUBLIC_URL}/send.html?box=NOELL`;
+  
+  console.log('Regenerating QR code for:', qrUrl);
+  
+  QRCode.toFile(path.join(__dirname, 'public', 'qr-code.png'), qrUrl, {
+    width: 512,
+    margin: 2,
+    errorCorrectionLevel: 'H',
+    color: { dark: '#c04660', light: '#fffdfb' }
+  }, (err) => {
+    if (err) console.error('QR generation error:', err);
+    else console.log('QR code regenerated successfully');
+  });
+  
+  // Also regenerate SVG
+  QRCode.toString(qrUrl, {
+    type: 'svg',
+    width: 512,
+    margin: 2,
+    errorCorrectionLevel: 'H',
+    color: { dark: '#c04660', light: '#fffdfb' }
+  }, (err, svg) => {
+    if (err) { console.error('QR SVG error:', err); return; }
+    const heart = '<g transform="translate(226, 226) scale(0.8)"><path d="M0 -10 C-10 -10 -10 0 0 10 C0 0 10 -10 10 -10 C10 -10 10 0 0 10 C0 0 -10 -10 0 -10" fill="#c04660"/></g>';
+    const svgWithHeart = svg.replace('</svg>', heart + '</svg>');
+    fs.writeFileSync(path.join(__dirname, 'public', 'qr-code.svg'), svgWithHeart);
+    console.log('QR code SVG regenerated successfully');
+  });
+}
+regenerateQR();
+
 const ALPHABET = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
 function newCode() {
   let code;
