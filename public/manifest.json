@@ -4,7 +4,7 @@
   "description": "Noelle's Lovebox — notes, secrets, hearts and memories in one little box.",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#fdeef0",
-  "theme_color": "#fdeef0",
+  "background_color": "#1e1218",
+  "theme_color": "#1e1218",
   "icons": [{ "src": "/icon.svg", "sizes": "any", "type": "image/svg+xml" }]
 }

@@ -327,6 +327,7 @@
       img.alt = `memory ${i + 1}`;
       img.loading = i === 0 ? 'eager' : 'lazy';
       slide.appendChild(img);
+      slide.addEventListener('click', () => openLightbox(i));
       track.appendChild(slide);
 
       const dot = document.createElement('button');

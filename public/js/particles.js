@@ -8,11 +8,11 @@ const Particles = (() => {
 
   const PARTICLE_COUNT = 25;
   const COLORS = [
-    'rgba(232, 160, 176, 0.4)',  /* rose */
-    'rgba(212, 196, 224, 0.4)',  /* lavender */
-    'rgba(212, 184, 150, 0.3)',  /* gold */
-    'rgba(255, 255, 255, 0.5)',  /* white */
-    'rgba(245, 208, 216, 0.4)',  /* pink */
+    'rgba(227, 200, 150, 0.45)',  /* gold */
+    'rgba(212, 122, 142, 0.4)',  /* rose */
+    'rgba(168, 143, 184, 0.35)',  /* lavender */
+    'rgba(243, 227, 230, 0.4)',  /* cream */
+    'rgba(201, 161, 94, 0.35)',  /* deep gold */
   ];
 
   function createParticle() {

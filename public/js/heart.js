@@ -18,9 +18,9 @@ const Heart = (() => {
   const CELL = 6;
   const W = SHAPE[0].length * CELL;
   const H = SHAPE.length * CELL;
-  const BASE = '#e0605f';
-  const FACE = '#7a2e2e';
-  const BLUSH = '#f5b3b3';
+  const BASE = '#c98a97';
+  const FACE = '#7a3a48';
+  const BLUSH = '#e8b7c0';
 
   let canvas = null;
   let ctx = null;

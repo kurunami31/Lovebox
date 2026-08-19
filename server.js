@@ -8,6 +8,7 @@ const http = require('http');
 const path = require('path');
 const fs = require('fs');
 const { WebSocketServer } = require('ws');
+const { DEFAULT_CODE, seedBox } = require('./seed');
 
 const app = express();
 const server = http.createServer(app);
@@ -17,138 +18,80 @@ const PORT = process.env.PORT || 3000;
 const DATA_DIR = path.join(__dirname, 'data');
 const FILE = path.join(DATA_DIR, 'boxes.json');
 const PHOTOS_DIR = path.join(__dirname, 'public', 'photos');
-const DEFAULT_CODE = 'NOELL';
 
 let store = { boxes: {} };
+
+/* ---------------- persistence ---------------- */
 
 function persist() {
   fs.mkdirSync(DATA_DIR, { recursive: true });
   fs.writeFileSync(FILE, JSON.stringify(store, null, 2));
 }
+
 function load() {
   try {
-    if (fs.existsSync(FILE)) store = JSON.parse(fs.readFileSync(FILE, 'utf8')) || { boxes: {} };
-  } catch {}
+    if (fs.existsSync(FILE)) {
+      const parsed = JSON.parse(fs.readFileSync(FILE, 'utf8'));
+      if (parsed && parsed.boxes) store = parsed;
+    }
+  } catch {
+    console.warn('Could not read boxes.json, starting with an empty store.');
+  }
 }
+
 load();
+if (seedBox(store)) {
+  persist();
+  console.log(`Seeded the default box (${DEFAULT_CODE}).`);
+}
 
-function seedDefault() {
-  const LETTER = `Hi baby, happy 4 years and 6 months nato po. 🥹❤️ Grabe no, 4 years and 6 months na diay ta. Murag dugay nagud diay ta together, layo na pero layo pa diba. And after everything we've been through, I'm still so thankful nga ikaw akong kauban.
+/* ---------------- QR regeneration ---------------- */
 
-Thank you kaayo sa pag-keep up sa akong kabadlongon ug sa akong pagka-gahi ug ulo. 😭😂 Kabalo ko nga usahay lisod ko sabton, usahay samokan kaayo ko, ug naa gyud koy mga moments nga kabalo ko samok kaayo ko, kanang murag gusto na nimo ko kumoton tungod sa akong kabadlongon HAHAHA 😭😂. Pero despite all of that, naa gihapon ka. Thank you kay patient ka sa akoa and for choosing to understand me even during the times nga lisod ko sabton. Thank you pud kaayo for always making me feel beautiful, especially sa mga times nga feeling nako pangit kaayo ko. Thank you for reminding me nga beautiful ko even when I can't see it myself. Thank you sa pag-boost sa akong confidence sa mga panahon nga ako mismo dili kabalo unsaon pag-believe sa akong sarili. Sometimes, I forget my worth, I doubt myself, and I become too hard on myself, pero somehow, you always find a way to remind me that I am enough. Thank you for always making me feel loved and appreciated, labi na gyud sa mga times nga makalimot ko unsaon pag-love ug appreciate sa akong sarili. You have this way of making me feel safe and loved without even realizing how much it means to me. And I hope you know nga tanan nimong little efforts, even the smallest ones, na-appreciate gyud nako. Bisan dili nako pirmi maingon or ma-express, please know nga I notice them and I keep them close to my heart.
-
-Spending this day with you feels extra special. Special man gyud ang every day nga naa ka sa akong life, pero mas special lang gyud ron kay monthsary nato hehe. 🥹❤️ Another month, another memory, another reminder kung unsa ta kalayo na ang naagian together. I know nga dili perfect atong relationship, and I know pud nga lisod atong situation karon. Daghan pa siguro tag challenges nga atubangon, ug naa gyud mga panahon nga mahimong kapoy ug lisod ang tanan. Pero despite everything, naa koy salig sa atong duha. I believe in us, and I believe nga kaya nato ni i-face as long as magpabilin tang mag uban, mag-sinabtanay, ug dili ta ma stop choosing each other. Thank you for staying. Thank you for loving me the way you do. Thank you for being patient with me, for making me smile, for comforting me, and for being one of the best parts of my life. I may not always say it perfectly, and sometimes kulang ra gyud akong words para ma-explain unsa ko ka-thankful nga naa ka, pero I hope you always know how much you mean to me.
-
-Happy 4 years and 6 months, baby. ❤️ I love you so much, palangga. And no matter how difficult things get, I hope we continue choosing each other, just like how we did from the very beginning. Here's to more months, more years, more memories, more kulit, more away nga ma-solve ra gihapon 😂, and more moments together.
-
-I love you so much, palangga. Thank you for being you, and thank you for staying with me through everything. Happy 4 years and 6 months to us. ❤️🥹`;
-
-  const LILY = `fun fact: lilies were considered one of the most beautiful and sacred flowers in ancient Egypt. And just like a lily, you are sacred and beautiful to me. Among all the people I have seen and known, you are the most beautiful person in my eyes — not just because of how you look, but because of who you are and the way you make my world feel so special. 🤍🌸`;
-
-  if (!store.boxes[DEFAULT_CODE]) {
-    store.boxes[DEFAULT_CODE] = {
-      code: DEFAULT_CODE,
-      name: "Noelle's Lovebox",
-      createdAt: Date.now(),
-      notes: [
-        {
-          id: 'greeting',
-          ts: Date.now(),
-          sender: 'your palangga',
-          content: LETTER,
-          sealed: false,
-          read: false,
-        },
-        {
-          id: 'lilies',
-          ts: Date.now() + 1,
-          sender: 'your palangga',
-          content: LILY,
-          sealed: false,
-          read: false,
-        },
-      ],
-      reads: 0,
-      spins: 0,
-      cover: '/photos/noelle-01.jpg',
-      invite: { asked: true, confirmed: false, by: '', at: null },
-    };
-    persist();
+function regenerateQR() {
+  const PUBLIC_URL = process.env.PUBLIC_URL || '';
+  if (!PUBLIC_URL) {
+    console.log('No PUBLIC_URL set, skipping QR regeneration.');
     return;
   }
 
-  const b = store.boxes[DEFAULT_CODE];
-  const greeting = (b.notes || []).find((n) => n.id === 'greeting');
-  if (greeting && !/monthsary/.test(greeting.content)) {
-    greeting.content = LETTER;
-    persist();
-  }
-  if (!(b.notes || []).some((n) => n.id === 'lilies')) {
-    b.notes.unshift({
-      id: 'lilies',
-      ts: Date.now(),
-      sender: 'your palangga',
-      content: LILY,
-      sealed: false,
-      read: false,
-    });
-    b.notes = b.notes.slice(-200);
-    persist();
-  }
-  if (!b.invite) {
-    b.invite = { asked: true, confirmed: false, by: '', at: null };
-    persist();
-  }
+  const QRCode = require('qrcode');
+  const qrUrl = `${PUBLIC_URL}/send.html?box=${DEFAULT_CODE}`;
+  const opts = {
+    width: 512,
+    margin: 2,
+    errorCorrectionLevel: 'H',
+    color: { dark: '#c04660', light: '#fffdfb' },
+  };
+
+  console.log(`Regenerating QR code for: ${qrUrl}`);
+
+  QRCode.toFile(path.join(__dirname, 'public', 'qr-code.png'), qrUrl, opts, (err) => {
+    if (err) console.error('QR generation error:', err);
+    else console.log('QR code PNG regenerated successfully.');
+  });
+
+  QRCode.toString(qrUrl, { ...opts, type: 'svg' }, (err, svg) => {
+    if (err) {
+      console.error('QR SVG error:', err);
+      return;
+    }
+    const heart =
+      '<g transform="translate(226, 226) scale(0.8)"><path d="M0 -10 C-10 -10 -10 0 0 10 C0 0 10 -10 10 -10 C10 -10 10 0 0 10 C0 0 -10 -10 0 -10" fill="#c04660"/></g>';
+    fs.writeFileSync(path.join(__dirname, 'public', 'qr-code.svg'), svg.replace('</svg>', heart + '</svg>'));
+    console.log('QR code SVG regenerated successfully.');
+  });
 }
-seedDefault();
+
+regenerateQR();
+
+/* ---------------- helpers ---------------- */
 
 app.use(express.json({ limit: '16mb' }));
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Root route - serve index.html
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
-
-// Regenerate QR code with correct PUBLIC_URL on startup
-function regenerateQR() {
-  const PUBLIC_URL = process.env.PUBLIC_URL || '';
-  if (!PUBLIC_URL) {
-    console.log('No PUBLIC_URL set, skipping QR regeneration');
-    return;
-  }
-  
-  const QRCode = require('qrcode');
-  const qrUrl = `${PUBLIC_URL}/send.html?box=NOELL`;
-  
-  console.log('Regenerating QR code for:', qrUrl);
-  
-  QRCode.toFile(path.join(__dirname, 'public', 'qr-code.png'), qrUrl, {
-    width: 512,
-    margin: 2,
-    errorCorrectionLevel: 'H',
-    color: { dark: '#c04660', light: '#fffdfb' }
-  }, (err) => {
-    if (err) console.error('QR generation error:', err);
-    else console.log('QR code regenerated successfully');
-  });
-  
-  // Also regenerate SVG
-  QRCode.toString(qrUrl, {
-    type: 'svg',
-    width: 512,
-    margin: 2,
-    errorCorrectionLevel: 'H',
-    color: { dark: '#c04660', light: '#fffdfb' }
-  }, (err, svg) => {
-    if (err) { console.error('QR SVG error:', err); return; }
-    const heart = '<g transform="translate(226, 226) scale(0.8)"><path d="M0 -10 C-10 -10 -10 0 0 10 C0 0 10 -10 10 -10 C10 -10 10 0 0 10 C0 0 -10 -10 0 -10" fill="#c04660"/></g>';
-    const svgWithHeart = svg.replace('</svg>', heart + '</svg>');
-    fs.writeFileSync(path.join(__dirname, 'public', 'qr-code.svg'), svgWithHeart);
-    console.log('QR code SVG regenerated successfully');
-  });
-}
-regenerateQR();
 
 const ALPHABET = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
 function newCode() {
@@ -194,6 +137,8 @@ function boxView(code) {
   };
 }
 
+/* ---------------- http routes ---------------- */
+
 app.get('/health', (req, res) => res.json({ ok: true, boxes: Object.keys(store.boxes).length }));
 
 app.get('/api/default', (req, res) => {
@@ -203,7 +148,8 @@ app.get('/api/default', (req, res) => {
 app.get('/api/photos', (req, res) => {
   let files = [];
   try {
-    files = fs.readdirSync(PHOTOS_DIR)
+    files = fs
+      .readdirSync(PHOTOS_DIR)
       .filter((f) => /\.(jpe?g|png|gif|webp)$/i.test(f))
       .sort();
   } catch {}
@@ -314,7 +260,11 @@ wss.on('connection', (ws, req) => {
 
   ws.on('message', (raw) => {
     let m;
-    try { m = JSON.parse(raw.toString()); } catch { return; }
+    try {
+      m = JSON.parse(raw.toString());
+    } catch {
+      return;
+    }
     const b = store.boxes[boxCode];
     if (!b) return;
 

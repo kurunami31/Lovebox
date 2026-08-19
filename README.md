@@ -1,6 +1,6 @@
 # Noelle's Lovebox
 
-A small, romantic web app made for Noelle: a lovebox that collects **notes, sealed secrets, hearts and memories** from the people who love her.
+A small, romantic web app made for Noelle: a lovebox that collects **notes, sealed secrets, hearts and memories** from the people who love her — redesigned in an **elegant luxury** style: deep plum velvet, rose and gold, like a premium keepsake box.
 
 The box opens with an **anniversary letter** — a 4 years & 6 months love note from the one who made it — followed by a note about **lilies**, the sacred flower of ancient Egypt, because to that someone Noelle is sacred and beautiful too. `🤍🌸`
 
@@ -8,16 +8,18 @@ Open the box page and the **first thing you see is a QR code** — scan it with 
 
 ## Features
 
-- **QR-first welcome** — the box's share code is the very first screen
+- **Elegant luxury design** — deep plum velvet backdrop, rose and gold accents, soft glowing cards, floating gold-dust particles and gentle background music
+- **QR-first welcome** — the box's share code is the very first screen, wrapped in a lily border frame
 - **The anniversary letter** — the first note in the box, the full 4 years & 6 months message, delivered live with a handwritten font
 - **The lilies note** — an ancient-Egypt lily fact and a declaration that Noelle is the most beautiful person of all, styled with a lily
-- **A date invitation** — an invitation card on the box page: *"Noelle, will you go out with me?"* — no details, just one button. When she taps **yes**, the heart bursts and it's sealed forever
-- **Lily motif** — a soft lily blooms in the welcome screen, in the memories header and on the lilies note
+- **A date invitation** — an invitation card: *"Baby, will you go out with me?"* — no details, just one button. When she taps **yes**, the heart bursts and it's sealed forever
+- **Lily motif** — a gold-tinted lily blooms in the welcome screen, the memories header and on the lilies note
 - **Lily borders** — the welcome QR card and the date invitation are wrapped in two hand-drawn lily border frames
-- **Memories gallery** — Noelle's photos sit in a polaroid grid; tap one to open a full-screen lightbox
+- **Memories gallery** — Noelle's photos sit in a swipeable carousel with dots and auto-play; tap one to open a full-screen lightbox
 - **Notes** — arrive live, in a handwritten font, with optional photo attachments
 - **Sealed secrets** — a sender ticks "seal it"; to read it, tap the wax and the heart spins to break the seal
 - **The heart** — spins when a note arrives or when a sender sends a heart; each message grows the box
+- **Background music + particles** — a music player (tap to toggle) plus floating gold/rose particles for a dreamy feel
 - **Default box** — the server seeds box `NOELL` on first boot, so the QR is always the first thing that comes out
 - **Sender page** (`/send.html?box=CODE`) — note, photo, sealed secret, or a heart; shows if the box owner is online
 - One box per code, no accounts. Codes are 5 characters. Notes can be up to 4000 characters.
@@ -55,11 +57,12 @@ This is a plain Node/Express + WebSocket app — it also runs on any VPS, Raspbe
 
 ## Files
 
-- `server.js` — express + WebSocket, JSON store in `data/boxes.json`, seeds the `NOELL` box, serves `/api/photos`
+- `server.js` — express + WebSocket, JSON store in `data/boxes.json`, serves `/api/photos`
+- `seed.js` — the seeded `NOELL` box content: the anniversary letter, the lilies note and the date invitation
 - `public/index.html` + `public/js/app.js` — the box page (QR welcome, notes, gallery, lightbox)
 - `public/send.html` + `public/js/sender.js` — the sender page
 - `public/photos/` — the memories gallery (22 photos)
-- `public/css/base.css` — everything, soft and warm
-- `public/js/heart.js` — the pixel heart · `share.js` — QR · `sound.js` — WebAudio
+- `public/css/base.css` — everything, elegant luxury styling
+- `public/js/heart.js` — the pixel heart · `share.js` — QR · `sound.js` — WebAudio · `particles.js` — gold dust · `music.js` — music player
 - `public/lily.svg` — the lily motif
 - `public/borders/` — the two lily border frames (welcome + invitation cards)
