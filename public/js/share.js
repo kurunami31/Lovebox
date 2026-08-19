@@ -15,11 +15,13 @@ const Share = (() => {
   }
 
   function makeQR(canvas, text) {
-    const qr = qrcode(0, 'M');
+    const qr = qrcode(0, 'H');
     qr.addData(text);
     qr.make();
     const n = qr.getModuleCount();
-    const size = n * 8;
+    const cell = 8;         /* pixels per module */
+    const margin = 4;       /* quiet-zone modules (QR spec minimum) */
+    const size = (n + margin * 2) * cell;
     canvas.width = size;
     canvas.height = size;
     const ctx = canvas.getContext('2d');
@@ -28,7 +30,9 @@ const Share = (() => {
     ctx.fillStyle = '#b85c74';
     for (let r = 0; r < n; r++) {
       for (let c = 0; c < n; c++) {
-        if (qr.isDark(r, c)) ctx.fillRect((c + 1) * 8, (r + 1) * 8, 8, 8);
+        if (qr.isDark(r, c)) {
+          ctx.fillRect((c + margin) * cell, (r + margin) * cell, cell, cell);
+        }
       }
     }
   }
