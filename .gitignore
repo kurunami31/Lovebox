@@ -5,5 +5,5 @@ Lily border*.png
 *.log
 .DS_Store
 .env
-"background music.mp3"
+background\ music.mp3
 qr-code.png
