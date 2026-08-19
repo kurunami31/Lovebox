@@ -3,7 +3,7 @@ const fs = require('fs');
 
 // Use PUBLIC_URL env var if set, otherwise fall back to localhost
 const PUBLIC_URL = process.env.PUBLIC_URL || 'http://localhost:3000';
-const url = `${PUBLIC_URL}/send.html?box=NOELL`;
+const url = `${PUBLIC_URL}/?box=NOELL&open=1`;
 
 console.log('Generating QR code for:', url);
 

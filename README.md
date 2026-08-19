@@ -4,12 +4,12 @@ A small, romantic web app made for Noelle: a lovebox that collects **notes, seal
 
 The box opens with an **anniversary letter** — a 4 years & 6 months love note from the one who made it — followed by a note about **lilies**, the sacred flower of ancient Egypt, because to that someone Noelle is sacred and beautiful too. `🤍🌸`
 
-Open the box page and the **first thing you see is a QR code** — scan it with another phone and it takes you straight to the send page. Anyone with the code can send.
+Open the box page and the **first thing you see is a QR code** — scan it with another phone and it opens the box right in front of them, letters, secrets and memories inside.
 
 ## Features
 
 - **Elegant luxury design** — deep plum velvet backdrop, rose and gold accents, soft glowing cards, floating gold-dust particles and gentle background music
-- **QR-first welcome** — the box's share code is the very first screen, wrapped in a lily border frame
+- **QR-first welcome** — the box's share code is the very first screen, wrapped in a lily border frame; scanning it opens the box page directly
 - **The anniversary letter** — the first note in the box, the full 4 years & 6 months message, delivered live with a handwritten font
 - **The lilies note** — an ancient-Egypt lily fact and a declaration that Noelle is the most beautiful person of all, styled with a lily
 - **A date invitation** — an invitation card: *"Baby, will you go out with me?"* — no details, just one button. When she taps **yes**, the heart bursts and it's sealed forever
@@ -21,7 +21,7 @@ Open the box page and the **first thing you see is a QR code** — scan it with 
 - **The heart** — spins when a note arrives or when a sender sends a heart; each message grows the box
 - **Background music + particles** — a music player (tap to toggle) plus floating gold/rose particles for a dreamy feel
 - **Default box** — the server seeds box `NOELL` on first boot, so the QR is always the first thing that comes out
-- **Sender page** (`/send.html?box=CODE`) — note, photo, sealed secret, or a heart; shows if the box owner is online
+- **Sender page** (`/send.html?box=CODE`) — note, photo, sealed secret, or a heart; shows if the box owner is online (still the way to add to the box)
 - One box per code, no accounts. Codes are 5 characters. Notes can be up to 4000 characters.
 
 ## Run it

@@ -448,7 +448,7 @@
   /* ---------------- share ---------------- */
 
   function openShare() {
-    Share.makeQR($('share-qr'), Share.senderUrl(boxCode));
+    Share.makeQR($('share-qr'), Share.boxUrl(boxCode));
     $('share-code').textContent = boxCode;
     Share.open();
   }
@@ -471,7 +471,7 @@
     } catch { return false; }
   }
 
-  function run() {
+  function run(autoOpen) {
     renderHead();
     renderCover();
     renderNotes();
@@ -544,10 +544,10 @@
     $('invite-yes').addEventListener('click', confirmInvite);
     $('share-copy').addEventListener('click', async () => {
       try {
-        await navigator.clipboard.writeText(Share.senderUrl(boxCode));
+        await navigator.clipboard.writeText(Share.boxUrl(boxCode));
         toast('link copied');
       } catch {
-        toast(Share.senderUrl(boxCode));
+        toast(Share.boxUrl(boxCode));
       }
     });
 
@@ -586,7 +586,12 @@
       Music.init();
     }, { once: true });
 
-    showWelcome();
+    if (autoOpen) {
+      const w = $('welcome');
+      w.classList.add('hidden');
+    } else {
+      showWelcome();
+    }
   }
 
   /* ---------------- onboarding ---------------- */
@@ -637,7 +642,9 @@
   /* ---------------- boot ---------------- */
 
   async function boot() {
-    const codeFromUrl = new URLSearchParams(location.search).get('box');
+    const params = new URLSearchParams(location.search);
+    const codeFromUrl = params.get('box');
+    const autoOpen = params.get('open') === '1';
     const stored = localStorage.getItem('keepsake.code');
     let candidate = codeFromUrl ? codeFromUrl.toUpperCase() : stored;
 
@@ -651,7 +658,7 @@
 
     if (candidate) {
       const ok = await loadBox(candidate);
-      if (ok) { run(); return; }
+      if (ok) { run(autoOpen); return; }
       if (codeFromUrl) {
         status('a box that isn\u2019t here');
         startOnboarding();

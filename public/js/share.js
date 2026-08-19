@@ -9,9 +9,9 @@ const Share = (() => {
     publicUrl = u || '';
   }
 
-  function senderUrl(boxCode) {
+  function boxUrl(boxCode) {
     const base = (publicUrl || location.origin).replace(/\/+$/, '');
-    return `${base}/send.html?box=${encodeURIComponent(boxCode)}`;
+    return `${base}/?box=${encodeURIComponent(boxCode)}&open=1`;
   }
 
   function makeQR(canvas, text) {
@@ -43,5 +43,5 @@ const Share = (() => {
     document.getElementById('scrim').classList.remove('is-on');
   }
 
-  return { setPublicUrl, senderUrl, makeQR, open, close };
+  return { setPublicUrl, boxUrl, makeQR, open, close };
 })();

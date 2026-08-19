@@ -55,7 +55,7 @@ function regenerateQR() {
   }
 
   const QRCode = require('qrcode');
-  const qrUrl = `${PUBLIC_URL}/send.html?box=${DEFAULT_CODE}`;
+  const qrUrl = `${PUBLIC_URL}/?box=${DEFAULT_CODE}&open=1`;
   const opts = {
     width: 512,
     margin: 2,
