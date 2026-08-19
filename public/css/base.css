@@ -517,10 +517,12 @@ body::after {
   max-width: 80vw;
   max-height: 80vw;
   image-rendering: pixelated;
-  border: 1px solid var(--line);
-  border-radius: 18px;
   background: #fff;
+  padding: 8px;
+  border-radius: 18px;
   box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4), var(--shadow-gold);
+  margin: 0 auto;
+  display: block;
 }
 .welcome__code {
   margin: 16px 0 20px;

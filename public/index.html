@@ -32,7 +32,7 @@
     <p class="welcome__kicker">&#10084; a lovebox made for Baby</p>
     <h1 class="welcome__title">scan to send</h1>
     <p class="welcome__sub">Point another phone at this code and the box will open right in front of them &#8212; letters, secrets and memories inside.</p>
-    <img src="/qr-code.svg" class="welcome__qr" alt="QR code to send notes">
+    <canvas class="welcome__qr" id="welcome-qr" aria-label="QR code to open the box"></canvas>
     <div class="welcome__code">code <b id="welcome-code">&#8226;&#8226;&#8226;&#8226;&#8226;</b></div>
     <button class="btn btn--primary" id="welcome-open">open the box</button>
   </div>

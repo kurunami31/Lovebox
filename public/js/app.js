@@ -103,6 +103,8 @@
     $('welcome-code').textContent = state.code;
     $('share-title').textContent = state.name;
     document.title = `${state.name} \u2014 a lovebox`;
+    const qr = $('welcome-qr');
+    if (qr) Share.makeQR(qr, Share.boxUrl(state.code));
   }
 
   function renderNotes() {
