@@ -317,9 +317,9 @@
     memPhotos = photos;
     $('mem-count').textContent = photos.length ? `\u00b7 ${photos.length}` : '';
     const track = $('mem-track');
-    const dots = $('mem-dots');
+    const segs = $('mem-segs');
     track.innerHTML = '';
-    dots.innerHTML = '';
+    segs.innerHTML = '';
     photos.forEach((file, i) => {
       const slide = document.createElement('div');
       slide.className = 'mem-slide';
@@ -332,11 +332,11 @@
       slide.addEventListener('click', () => openLightbox(i));
       track.appendChild(slide);
 
-      const dot = document.createElement('button');
-      dot.className = 'mem-dot' + (i === 0 ? ' active' : '');
-      dot.setAttribute('aria-label', `Go to photo ${i + 1}`);
-      dot.addEventListener('click', () => goToSlide(i));
-      dots.appendChild(dot);
+      const seg = document.createElement('button');
+      seg.className = 'mem-seg' + (i === 0 ? ' active' : '');
+      seg.setAttribute('aria-label', `Go to photo ${i + 1}`);
+      seg.addEventListener('click', () => goToSlide(i));
+      segs.appendChild(seg);
     });
     updateCarousel();
     setupTouch();
@@ -347,9 +347,16 @@
     const track = $('mem-track');
     if (!track) return;
     track.style.transform = `translateX(${-memIndex * 100}%)`;
-    document.querySelectorAll('.mem-dot').forEach((d, i) => {
+    track.querySelectorAll('.mem-slide').forEach((s, i) => {
+      s.classList.toggle('active', i === memIndex);
+    });
+    document.querySelectorAll('.mem-seg').forEach((d, i) => {
       d.classList.toggle('active', i === memIndex);
     });
+    const counter = $('mem-counter');
+    if (counter && memPhotos.length) {
+      counter.textContent = `${String(memIndex + 1).padStart(2, '0')} / ${String(memPhotos.length).padStart(2, '0')}`;
+    }
   }
 
   function goToSlide(i) {
