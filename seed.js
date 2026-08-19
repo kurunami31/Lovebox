@@ -43,7 +43,7 @@ function seedBox(store) {
       notes: [greetingNote, lilyNote],
       reads: 0,
       spins: 0,
-      cover: '/photos/noelle-01.jpg',
+      cover: '/photos/cover-01.jpg',
       invite: { asked: true, confirmed: false, by: '', at: null },
     };
     return true;
@@ -51,6 +51,11 @@ function seedBox(store) {
 
   let changed = false;
   const b = store.boxes[DEFAULT_CODE];
+
+  if (b.cover !== '/photos/cover-01.jpg') {
+    b.cover = '/photos/cover-01.jpg';
+    changed = true;
+  }
 
   const greeting = (b.notes || []).find((n) => n.id === 'greeting');
   if (greeting && !/monthsary/.test(greeting.content)) {
