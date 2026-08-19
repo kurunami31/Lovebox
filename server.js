@@ -45,44 +45,52 @@ if (seedBox(store)) {
   console.log(`Seeded the default box (${DEFAULT_CODE}).`);
 }
 
-/* ---------------- QR regeneration ---------------- */
+/* ---------------- QR generation (dynamic, request-aware) ---------------- */
 
-function regenerateQR() {
+function baseUrl(req) {
   const PUBLIC_URL = process.env.PUBLIC_URL || '';
-  if (!PUBLIC_URL) {
-    console.log('No PUBLIC_URL set, skipping QR regeneration.');
-    return;
-  }
-
-  const QRCode = require('qrcode');
-  const qrUrl = `${PUBLIC_URL}/?box=${DEFAULT_CODE}&open=1`;
-  const opts = {
-    width: 512,
-    margin: 2,
-    errorCorrectionLevel: 'H',
-    color: { dark: '#c04660', light: '#fffdfb' },
-  };
-
-  console.log(`Regenerating QR code for: ${qrUrl}`);
-
-  QRCode.toFile(path.join(__dirname, 'public', 'qr-code.png'), qrUrl, opts, (err) => {
-    if (err) console.error('QR generation error:', err);
-    else console.log('QR code PNG regenerated successfully.');
-  });
-
-  QRCode.toString(qrUrl, { ...opts, type: 'svg' }, (err, svg) => {
-    if (err) {
-      console.error('QR SVG error:', err);
-      return;
-    }
-    const heart =
-      '<g transform="translate(226, 226) scale(0.8)"><path d="M0 -10 C-10 -10 -10 0 0 10 C0 0 10 -10 10 -10 C10 -10 10 0 0 10 C0 0 -10 -10 0 -10" fill="#c04660"/></g>';
-    fs.writeFileSync(path.join(__dirname, 'public', 'qr-code.svg'), svg.replace('</svg>', heart + '</svg>'));
-    console.log('QR code SVG regenerated successfully.');
-  });
+  if (PUBLIC_URL) return PUBLIC_URL.replace(/\/+$/, '');
+  return `${req.protocol}://${req.get('host')}`;
 }
 
-regenerateQR();
+function qrOpts(dark) {
+  return {
+    width: 512,
+    margin: 4,
+    errorCorrectionLevel: 'H',
+    color: { dark: dark || '#c04660', light: '#ffffff' },
+  };
+}
+
+const QR_HEART =
+  '<g transform="translate(226, 226) scale(0.8)"><path d="M0 -10 C-10 -10 -10 0 0 10 C0 0 10 -10 10 -10 C10 -10 10 0 0 10 C0 0 -10 -10 0 -10" fill="#c04660"/></g>';
+
+function qrUrlFor(req) {
+  const code = String(req.query.box || DEFAULT_CODE).toUpperCase();
+  return `${baseUrl(req)}/?box=${encodeURIComponent(code)}&open=1`;
+}
+
+app.get('/qr-code.svg', (req, res) => {
+  const QRCode = require('qrcode');
+  QRCode.toString(qrUrlFor(req), { ...qrOpts(), type: 'svg' }, (err, svg) => {
+    if (err) {
+      res.status(500).send('qr error');
+      return;
+    }
+    res.type('image/svg+xml').set('Cache-Control', 'no-store').send(svg.replace('</svg>', QR_HEART + '</svg>'));
+  });
+});
+
+app.get('/qr-code.png', (req, res) => {
+  const QRCode = require('qrcode');
+  QRCode.toBuffer(qrUrlFor(req), qrOpts(), (err, buf) => {
+    if (err) {
+      res.status(500).send('qr error');
+      return;
+    }
+    res.type('image/png').set('Cache-Control', 'no-store').send(buf);
+  });
+});
 
 /* ---------------- helpers ---------------- */
 

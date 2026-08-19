@@ -32,7 +32,7 @@
     <p class="welcome__kicker">&#10084; a lovebox made for Baby</p>
     <h1 class="welcome__title">scan to send</h1>
     <p class="welcome__sub">Point another phone at this code and the box will open right in front of them &#8212; letters, secrets and memories inside.</p>
-    <canvas class="welcome__qr" id="welcome-qr" aria-label="QR code to open the box"></canvas>
+    <img src="/qr-code.svg?box=NOELL" class="welcome__qr" alt="QR code to open the box">
     <div class="welcome__code">code <b id="welcome-code">&#8226;&#8226;&#8226;&#8226;&#8226;</b></div>
     <button class="btn btn--primary" id="welcome-open">open the box</button>
   </div>
@@ -112,7 +112,7 @@
     <button class="modal__close" id="share-close" aria-label="close">&#215;</button>
     <h2 id="share-title">Lovebox</h2>
     <p class="modal__sub">scan to send a note, a secret, or a heart</p>
-    <canvas class="modal__qr" id="share-qr"></canvas>
+    <img class="modal__qr" id="share-qr" alt="QR code to open the box">
     <div class="code">code <b id="share-code"></b></div>
     <button class="btn" id="share-copy">copy link</button>
   </div>
@@ -145,7 +145,6 @@
   </div>
 </div>
 
-<script src="/js/vendor/qrcode.min.js"></script>
 <script src="/js/sound.js"></script>
 <script src="/js/heart.js"></script>
 <script src="/js/share.js"></script>

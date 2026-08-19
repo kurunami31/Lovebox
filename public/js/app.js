@@ -104,7 +104,7 @@
     $('share-title').textContent = state.name;
     document.title = `${state.name} \u2014 a lovebox`;
     const qr = $('welcome-qr');
-    if (qr) Share.makeQR(qr, Share.boxUrl(state.code));
+    if (qr) qr.src = `/qr-code.svg?box=${encodeURIComponent(state.code)}`;
   }
 
   function renderNotes() {
@@ -450,7 +450,7 @@
   /* ---------------- share ---------------- */
 
   function openShare() {
-    Share.makeQR($('share-qr'), Share.boxUrl(boxCode));
+    $('share-qr').src = `/qr-code.svg?box=${encodeURIComponent(boxCode)}`;
     $('share-code').textContent = boxCode;
     Share.open();
   }
